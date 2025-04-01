@@ -7,172 +7,295 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.unit.dp
+import pl.preclaw.florafocus.data.model.LocationType
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Grass
+import androidx.compose.material.icons.filled.Landscape
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.Yard
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
-import pl.preclaw.florafocus.data.model.LocationType
-import pl.preclaw.florafocus.data.repository.*
+import androidx.compose.ui.text.style.TextAlign
+import pl.preclaw.florafocus.data.model.LightCondition
+import pl.preclaw.florafocus.data.model.SoilType
+import pl.preclaw.florafocus.data.repository.GardenAreaEntity
+import pl.preclaw.florafocus.data.repository.GardenSpaceEntity
+import pl.preclaw.florafocus.data.repository.PlantLocationEntity
+import pl.preclaw.florafocus.data.repository.SpaceWithAreas
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Place
+import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Card
+import androidx.compose.material3.RadioButton
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlacesScreen(gardenViewModel: GardenViewModel = viewModel()) {
-    val spaces by gardenViewModel.allSpaces.collectAsState(initial = emptyList())
-    var selectedSpace by remember { mutableStateOf<GardenSpaceEntity?>(null) }
+fun PlacesScreen(
+    gardenViewModel: GardenViewModel = viewModel(),
+    mainViewModel: MainViewModel = viewModel()
+) {
+    val spacesWithAreas by gardenViewModel.allSpaces.collectAsState(initial = emptyList())
+
+    // Stan dla wybranego obszaru i lokalizacji
     var selectedArea by remember { mutableStateOf<GardenAreaEntity?>(null) }
-    var showAddSpaceDialog by remember { mutableStateOf(false) }
+    var selectedLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
+
+    // Stan dla wybranej/domyślnej przestrzeni głównej
+    var selectedSpaceIndex by remember { mutableStateOf(0) }
+
+    // Stan dla dialogów
+    var showChangeSpaceDialog by remember { mutableStateOf(false) }
     var showAddAreaDialog by remember { mutableStateOf(false) }
     var showAddLocationDialog by remember { mutableStateOf(false) }
+    var showAddSpaceDialog by remember { mutableStateOf(false) }
 
-    // Tytuł zależny od aktualnego widoku
-    val screenTitle = when {
-        selectedArea != null -> selectedArea!!.name
-        selectedSpace != null -> selectedSpace!!.name
-        else -> "Miejsca"
-    }
+    // Menu z trzema kropkami
+    var showOverflowMenu by remember { mutableStateOf(false) }
 
-    Column {
-        // Pasek nawigacji
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Przycisk powrotu
-            if (selectedArea != null || selectedSpace != null) {
-                IconButton(onClick = {
-                    if (selectedArea != null) {
-                        selectedArea = null
+    // Pobierz aktualną przestrzeń i jej obszary
+    val currentSpace = if (spacesWithAreas.isNotEmpty()) {
+        spacesWithAreas.getOrNull(selectedSpaceIndex)
+    } else null
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    if (selectedLocation != null) {
+                        Text(selectedLocation!!.name)
+                    } else if (selectedArea != null) {
+                        Text(selectedArea!!.name)
                     } else {
-                        selectedSpace = null
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(currentSpace?.space?.name ?: "Miejsca")
+                            if (spacesWithAreas.size > 1) {
+                                IconButton(onClick = { showChangeSpaceDialog = true }) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "Zmień przestrzeń"
+                                    )
+                                }
+                            }
+                        }
                     }
-                }) {
-                    Icon(Icons.Default.ArrowBack, "Powrót")
-                }
-            } else {
-                // Placeholder dla zachowania układu
-                Spacer(modifier = Modifier.width(48.dp))
-            }
+                },
+                navigationIcon = {
+                    if (selectedLocation != null || selectedArea != null) {
+                        IconButton(onClick = {
+                            if (selectedLocation != null) {
+                                selectedLocation = null
+                            } else {
+                                selectedArea = null
+                            }
+                        }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Powrót")
+                        }
+                    }
+                },
+                actions = {
+                    // Przycisk dodawania
+                    IconButton(onClick = {
+                        if (selectedLocation != null) {
+                            // Tu będzie obsługa dodawania rośliny do lokalizacji
+                        } else if (selectedArea != null) {
+                            showAddLocationDialog = true
+                        } else if (currentSpace != null) {
+                            showAddAreaDialog = true
+                        }
+                    }) {
+                        Icon(Icons.Default.Add, contentDescription = "Dodaj")
+                    }
 
-            // Tytuł
-            Text(
-                text = screenTitle,
-                style = MaterialTheme.typography.titleLarge
+                    // Menu z trzema kropkami
+                    Box {
+                        IconButton(onClick = { showOverflowMenu = true }) {
+                            Icon(
+                                Icons.Default.MoreVert,
+                                contentDescription = "Więcej opcji"
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showOverflowMenu,
+                            onDismissRequest = { showOverflowMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Zmień przestrzeń główną") },
+                                onClick = {
+                                    showChangeSpaceDialog = true
+                                    showOverflowMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Dodaj nową przestrzeń główną") },
+                                onClick = {
+                                    showAddSpaceDialog = true
+                                    showOverflowMenu = false
+                                }
+                            )
+                        }
+                    }
+                }
             )
-
-            // Przycisk dodawania
-            IconButton(onClick = {
-                when {
-                    selectedArea != null -> showAddLocationDialog = true
-                    selectedSpace != null -> showAddAreaDialog = true
-                    else -> showAddSpaceDialog = true
-                }
-            }) {
-                Icon(Icons.Default.Add, "Dodaj")
-            }
         }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            when {
+                // Widok szczegółów lokalizacji
+                selectedLocation != null -> {
+                    LocationDetailsScreen(
+                        location = selectedLocation!!,
+                        onBack = { selectedLocation = null },
+                        gardenViewModel = gardenViewModel,
+                        mainViewModel = mainViewModel
+                    )
+                }
 
-        // Zawartość zależna od aktualnego widoku
-        when {
-            selectedArea != null -> {
                 // Widok lokalizacji w obszarze
-                val locations by gardenViewModel.getLocationsForArea(selectedArea!!.id)
-                    .collectAsState(initial = emptyList())
+                selectedArea != null -> {
+                    val locations by gardenViewModel.getLocationsForArea(selectedArea!!.id)
+                        .collectAsState(initial = emptyList())
 
-                if (locations.isEmpty()) {
-                    EmptyListMessage("lokalizacji")
-                } else {
-                    LocationsList(
-                        locations = locations,
-                        onLocationClick = { /* Obsługa kliknięcia lokalizacji */ },
-                        onDeleteClick = { gardenViewModel.deleteLocation(it) }
-                    )
+                    Column {
+                        if (locations.isEmpty()) {
+                            EmptyListMessage("lokalizacji")
+                        } else {
+                            LocationsList(
+                                locations = locations,
+                                onLocationClick = { selectedLocation = it },
+                                onDeleteClick = { gardenViewModel.deleteLocation(it) }
+                            )
+                        }
+                    }
                 }
-            }
-            selectedSpace != null -> {
-                // Widok obszarów w przestrzeni
-                val areas by gardenViewModel.getAreasForSpace(selectedSpace!!.id)
-                    .collectAsState(initial = emptyList())
 
-                if (areas.isEmpty()) {
-                    EmptyListMessage("obszarów")
-                } else {
-                    AreasList(
-                        areas = areas,
-                        onAreaClick = { selectedArea = it },
-                        onDeleteClick = { gardenViewModel.deleteArea(it) }
-                    )
-                }
-            }
-            else -> {
-                // Widok wszystkich przestrzeni
-                if (spaces.isEmpty()) {
-                    EmptyListMessage("przestrzeni")
-                } else {
-                    SpacesList(
-                        spaces = spaces,
-                        onSpaceClick = { selectedSpace = it },
-                        onDeleteClick = { gardenViewModel.deleteSpace(it) }
-                    )
+                // Widok domyślny - obszary w wybranej przestrzeni
+                else -> {
+                    if (currentSpace == null) {
+                        // Brak przestrzeni - pokaż komunikat powitalny i przycisk dodawania
+                        EmptySpacesMessage(onAddClick = { showAddSpaceDialog = true })
+                    } else {
+                        // Pokaż obszary z wybranej przestrzeni
+                        val areas by gardenViewModel.getAreasForSpace(currentSpace.space.id)
+                            .collectAsState(initial = emptyList())
+
+                        if (areas.isEmpty()) {
+                            EmptyListMessage("obszarów w ${currentSpace.space.name}")
+                        } else {
+                            AreasList(
+                                areas = areas,
+                                onAreaClick = { selectedArea = it },
+                                onDeleteClick = { gardenViewModel.deleteArea(it) }
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 
-    // Dialogi
+    // Dialog zmiany głównej przestrzeni
+    if (showChangeSpaceDialog) {
+        ChangeSpaceDialog(
+            spaces = spacesWithAreas.map { it.space },
+            selectedIndex = selectedSpaceIndex,
+            onDismiss = { showChangeSpaceDialog = false },
+            onSelect = { index ->
+                selectedSpaceIndex = index
+                showChangeSpaceDialog = false
+            }
+        )
+    }
+
+    // Dialog dodawania przestrzeni
     if (showAddSpaceDialog) {
         AddSpaceDialog(
             onDismiss = { showAddSpaceDialog = false },
             onAdd = { name, description ->
-                gardenViewModel.addSpace(GardenSpaceEntity(
-                    name = name,
-                    description = description
-                ))
+                gardenViewModel.addSpace(
+                    GardenSpaceEntity(
+                        name = name,
+                        description = description
+                    )
+                )
                 showAddSpaceDialog = false
             }
         )
     }
 
-    if (showAddAreaDialog && selectedSpace != null) {
+    // Dialog dodawania obszaru
+    if (showAddAreaDialog && currentSpace != null) {
         AddAreaDialog(
             onDismiss = { showAddAreaDialog = false },
             onAdd = { name, description ->
-                gardenViewModel.addArea(GardenAreaEntity(
-                    name = name,
-                    description = description,
-                    parentId = selectedSpace!!.id
-                ))
+                gardenViewModel.addArea(
+                    GardenAreaEntity(
+                        name = name,
+                        description = description,
+                        parentId = currentSpace.space.id
+                    )
+                )
                 showAddAreaDialog = false
             }
         )
     }
 
+    // Dialog dodawania lokalizacji
     if (showAddLocationDialog && selectedArea != null) {
         AddLocationDialog(
             onDismiss = { showAddLocationDialog = false },
             onAdd = { name, description, type, light, soil, notes ->
-                gardenViewModel.addLocation(PlantLocationEntity(
-                    name = name,
-                    description = description,
-                    parentId = selectedArea!!.id,
-                    type = type,
-                    lightConditions = light,
-                    soilType = soil,
-                    notes = notes
-                ))
+                gardenViewModel.addLocation(
+                    PlantLocationEntity(
+                        name = name,
+                        description = description,
+                        parentId = selectedArea!!.id,
+                        type = type,
+                        lightConditions = light,
+                        soilType = soil,
+                        notes = notes
+                    )
+                )
                 showAddLocationDialog = false
             }
         )
@@ -456,6 +579,7 @@ fun AddAreaDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddLocationDialog(
     onDismiss: () -> Unit,
@@ -465,11 +589,13 @@ fun AddLocationDialog(
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(LocationType.BED) }
-    var lightConditions by remember { mutableStateOf("") }
-    var soilType by remember { mutableStateOf("") }
+    var selectedLightCondition by remember { mutableStateOf<LightCondition?>(null) }
+    var selectedSoilType by remember { mutableStateOf<SoilType?>(null) }
     var notes by remember { mutableStateOf("") }
 
     val locationTypes = LocationType.values().toList()
+    val lightConditions = LightCondition.values().toList()
+    val soilTypes = SoilType.values().toList()
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -517,6 +643,7 @@ fun AddLocationDialog(
                                         LocationType.RAISED_BED -> "Podwyższona"
                                         LocationType.POT -> "Donica"
                                         LocationType.TREE_SPOT -> "Drzewo"
+                                        LocationType.SHRUB_SPOT -> "Krzew"
                                         LocationType.GENERAL_AREA -> "Ogólna"
                                         LocationType.OTHER -> "Inne"
                                     }
@@ -526,23 +653,91 @@ fun AddLocationDialog(
                     }
                 }
 
-                OutlinedTextField(
-                    value = lightConditions,
-                    onValueChange = { lightConditions = it },
-                    label = { Text("Warunki świetlne (opcjonalnie)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                // Dropdown dla warunków świetlnych
+                Text(
+                    text = "Warunki świetlne",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                 )
 
-                OutlinedTextField(
-                    value = soilType,
-                    onValueChange = { soilType = it },
-                    label = { Text("Typ gleby (opcjonalnie)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                var lightExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = lightExpanded,
+                    onExpandedChange = { lightExpanded = !lightExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedLightCondition?.displayName ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Wybierz warunki świetlne") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = lightExpanded)
+                        },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = lightExpanded,
+                        onDismissRequest = { lightExpanded = false }
+                    ) {
+                        lightConditions.forEach { condition ->
+                            DropdownMenuItem(
+                                text = { Text(condition.displayName) },
+                                onClick = {
+                                    selectedLightCondition = condition
+                                    lightExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Dropdown dla typu gleby
+                Text(
+                    text = "Typ gleby",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                 )
+
+                var soilExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = soilExpanded,
+                    onExpandedChange = { soilExpanded = !soilExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedSoilType?.displayName ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Wybierz typ gleby") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = soilExpanded)
+                        },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = soilExpanded,
+                        onDismissRequest = { soilExpanded = false }
+                    ) {
+                        soilTypes.forEach { soil ->
+                            DropdownMenuItem(
+                                text = { Text(soil.displayName) },
+                                onClick = {
+                                    selectedSoilType = soil
+                                    soilExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
 
                 OutlinedTextField(
                     value = notes,
@@ -558,8 +753,14 @@ fun AddLocationDialog(
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        onAdd(name, description, selectedType,
-                            lightConditions, soilType, notes)
+                        onAdd(
+                            name,
+                            description,
+                            selectedType,
+                            selectedLightCondition?.displayName ?: "",
+                            selectedSoilType?.displayName ?: "",
+                            notes
+                        )
                     }
                 }
             ) {
@@ -572,4 +773,111 @@ fun AddLocationDialog(
             }
         }
     )
+}
+
+@Composable
+fun ChangeSpaceDialog(
+    spaces: List<GardenSpaceEntity>,
+    selectedIndex: Int,
+    onDismiss: () -> Unit,
+    onSelect: (Int) -> Unit
+) {
+    var tempSelectedIndex by remember { mutableStateOf(selectedIndex) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Wybierz przestrzeń główną") },
+        text = {
+            LazyColumn {
+                itemsIndexed(spaces) { index, space ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { tempSelectedIndex = index }
+                            .padding(vertical = 12.dp, horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = tempSelectedIndex == index,
+                            onClick = { tempSelectedIndex = index }
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Column {
+                            Text(
+                                text = space.name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            if (space.description.isNotBlank()) {
+                                Text(
+                                    text = space.description,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSelect(tempSelectedIndex) }
+            ) {
+                Text("Wybierz")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text("Anuluj")
+            }
+        }
+    )
+}
+@Composable
+fun EmptySpacesMessage(onAddClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Yard,
+            contentDescription = null,
+            modifier = Modifier
+                .size(100.dp)
+                .padding(bottom = 16.dp),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        )
+
+        Text(
+            text = "Nie masz jeszcze żadnych przestrzeni",
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Dodaj swoją pierwszą przestrzeń, np. \"Ogródek\" lub \"Działka ROD\"",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+
+        Button(
+            onClick = onAddClick,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text("Dodaj przestrzeń")
+        }
+    }
 }

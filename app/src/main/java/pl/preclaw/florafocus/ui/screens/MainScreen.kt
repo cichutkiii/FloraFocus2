@@ -26,12 +26,15 @@ import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 
+// W MainScreen.kt, w funkcji MainScreen, dodaj GardenViewModel:
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(onAddPlantClick: () -> Unit) {
     val tabs = listOf("Zadania", "Rośliny", "Miejsca")
     var selectedTab by remember { mutableIntStateOf(0) }
     val mainViewModel: MainViewModel = viewModel()
+    val gardenViewModel: GardenViewModel = viewModel()  // Dodane
 
     val plants by mainViewModel.plants.collectAsState(initial = emptyList())
     val allPlants by mainViewModel.allPlants.collectAsState(initial = emptyList())
@@ -73,7 +76,8 @@ fun MainScreen(onAddPlantClick: () -> Unit) {
                     viewModel = mainViewModel
                 )
                 2 -> PlacesScreen(
-                    gardenViewModel = GardenViewModel(application = Application())
+                    gardenViewModel = gardenViewModel,  // Zaktualizowane
+                    mainViewModel = mainViewModel       // Dodane
                 )
             }
         }

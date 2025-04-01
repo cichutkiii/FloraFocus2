@@ -89,7 +89,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.auth.ktx)
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.composables:icons-lucide:1.0.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 

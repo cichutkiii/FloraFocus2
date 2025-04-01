@@ -39,7 +39,8 @@ enum class LocationType {
     POT,          // Donica
     TREE_SPOT,    // Miejsce na drzewo
     GENERAL_AREA, // Ogólna przestrzeń
-    OTHER         // Inne
+    OTHER,         // Inne
+    SHRUB_SPOT
 }
 
 // Roślina umieszczona w konkretnym miejscu
@@ -52,3 +53,22 @@ data class PlantPlacement(
     val notes: String = "",
     val variety: String = "" // Odmiana/gatunek, np. dla rozróżnienia tej samej rośliny w różnych grządkach
 )
+// Predefiniowane wartości dla warunków świetlnych
+enum class LightCondition(val displayName: String) {
+    FULL_SUN("Pełne słońce"),
+    PARTIAL_SHADE("Półcień"),
+    SHADE("Cień"),
+    DEEP_SHADE("Głęboki cień"),
+    VARIABLE("Zmienne naświetlenie")
+}
+
+// Predefiniowane wartości dla typów gleby
+enum class SoilType(val displayName: String) {
+    SANDY("Piaszczysta"),
+    CLAY("Gliniasta"),
+    LOAM("Próchniczna"),
+    SILTY("Ilasta"),
+    PEATY("Torfowa"),
+    ROCKY("Kamienna"),
+    MIXED("Mieszana")
+}
