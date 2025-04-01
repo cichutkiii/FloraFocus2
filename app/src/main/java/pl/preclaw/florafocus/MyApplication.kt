@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pl.preclaw.florafocus.data.repository.AppDatabase
 import pl.preclaw.florafocus.data.repository.FirebasePlantRepository
+import pl.preclaw.florafocus.data.repository.MIGRATION_1_2
 import pl.preclaw.florafocus.data.repository.UserPlant
 
 class MyApplication : Application() {
@@ -22,7 +23,9 @@ class MyApplication : Application() {
         database = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "flora-db"
-        ).build()
+        ).addMigrations(MIGRATION_1_2) // Dodanie migracji
+
+            .build()
 
         firebaseRepo = FirebasePlantRepository()
 

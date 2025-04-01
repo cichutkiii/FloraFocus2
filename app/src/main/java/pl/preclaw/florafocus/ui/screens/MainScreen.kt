@@ -1,5 +1,6 @@
 package pl.preclaw.florafocus.ui.screens
 
+import android.app.Application
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +72,9 @@ fun MainScreen(onAddPlantClick: () -> Unit) {
                     onAddPlantClick = onAddPlantClick,
                     viewModel = mainViewModel
                 )
-                2 -> PlacesScreen()
+                2 -> PlacesScreen(
+                    gardenViewModel = GardenViewModel(application = Application())
+                )
             }
         }
     }
