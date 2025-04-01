@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "630125111114",
+    "firebase_url": "https://florafocus-e2e69-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "florafocus-e2e69",
+    "storage_bucket": "florafocus-e2e69.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630125111114:android:443a1970a2a004b836c3b3",
+        "android_client_info": {
+          "package_name": "pl.preclaw.florafocus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGXKHZVWo5U9IsPQF1HiHaOWdUwW1YPoI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

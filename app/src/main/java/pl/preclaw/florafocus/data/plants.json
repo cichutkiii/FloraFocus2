@@ -1,0 +1,3191 @@
+{
+  "plants": {
+    "ziemniak": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5a-8a",
+      "Soil type": "Przepuszczalna, lekko kwaśna",
+      "Family": "Solanaceae",
+      "Edible parts": [
+        "Bulwy"
+      ],
+      "careSteps": [
+        {
+          "task": "Sadzenie bulw",
+          "dateRange": {
+            "start": "20-03",
+            "end": "10-05"
+          }
+        },
+        {
+          "task": "Pielenie",
+          "dateRange": {
+            "start": "01-06",
+            "end": "30-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-08",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "20-03",
+        "end": "10-05"
+      },
+      "pests": [
+        "Stonka ziemniaczana",
+        "Mszyca brzoskwiniowo-ziemniaczana"
+      ],
+      "diseases": [
+        "Zaraza ziemniaka",
+        "Alternarioza"
+      ],
+      "companions": [
+        "Fasola",
+        "Kapusta",
+        "Szpinak"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Ogórek",
+        "Dynia"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 18.0
+        },
+        "harvest": {
+          "min": 10.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kiełkowanie",
+        "60": "Kwitnienie",
+        "90": "Zbiór"
+      }
+    },
+    "cebula": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Próchnicza, przepuszczalna",
+      "Family": "Amaryllidaceae",
+      "Edible parts": [
+        "Cebula"
+      ],
+      "careSteps": [
+        {
+          "task": "Sadzenie cebulek",
+          "dateRange": {
+            "start": "15-03",
+            "end": "15-04"
+          }
+        },
+        {
+          "task": "Nawożenie",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-08"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-02",
+        "end": "15-03"
+      },
+      "pests": [
+        "Śmietka cebulanka",
+        "Wciornastki"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Sałata",
+        "Burak"
+      ],
+      "incompatibles": [
+        "Fasola",
+        "Groch",
+        "Kapusta"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 8.0,
+          "max": 20.0
+        },
+        "digging": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Wzrost liści",
+        "60": "Formowanie cebul",
+        "120": "Dojrzałość"
+      }
+    },
+    "marchew": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Piaszczysto-gliniasta",
+      "Family": "Apiaceae",
+      "Edible parts": [
+        "Korzeń"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Przerywanie",
+          "dateRange": {
+            "start": "20-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "15-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "15-05"
+      },
+      "pests": [
+        "Połyśnica marchwianka",
+        "Mszyce"
+      ],
+      "diseases": [
+        "Alternarioza",
+        "Mączniak prawdziwy"
+      ],
+      "companions": [
+        "Cebula",
+        "Por",
+        "Rzodkiewka"
+      ],
+      "incompatibles": [
+        "Koper",
+        "Seler",
+        "Ziemniak"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 18.0
+        },
+        "digging": {
+          "min": 10.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Wschody",
+        "60": "Formowanie korzenia",
+        "90": "Dojrzałość"
+      }
+    },
+    "kapusta": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Gliniasta, pH 6.0-7.5",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Główka"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew rozsady",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie",
+          "dateRange": {
+            "start": "15-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-09",
+            "end": "15-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Bielinek kapustnik",
+        "Mszyce kapuściane"
+      ],
+      "diseases": [
+        "Kiła kapusty",
+        "Czarna zgnilizna"
+      ],
+      "companions": [
+        "Ziemniak",
+        "Burak",
+        "Szpinak"
+      ],
+      "incompatibles": [
+        "Truskawki",
+        "Fasola",
+        "Pomidor"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "digging": {
+          "min": 5.0,
+          "max": 15.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Formowanie główki",
+        "60": "Zawijanie liści",
+        "90": "Dojrzałość"
+      }
+    },
+    "pomidor": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "7a-8a",
+      "Soil type": "Żyzna, próchnicza",
+      "Family": "Solanaceae",
+      "Edible parts": [
+        "Owoce"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew rozsady",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie",
+          "dateRange": {
+            "start": "15-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Stonka ziemniaczana",
+        "Mączlik szklarniowy"
+      ],
+      "diseases": [
+        "Zaraza ziemniaka",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Bazylia",
+        "Marchew",
+        "Natka pietruszki"
+      ],
+      "incompatibles": [
+        "Ziemniak",
+        "Ogórek",
+        "Fenkuł"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 15.0,
+          "max": 25.0
+        },
+        "harvest": {
+          "min": 18.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie owoców",
+        "90": "Dojrzewanie"
+      }
+    },
+    "ogórek": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "7a-8a",
+      "Soil type": "Żyzna, dobrze przepuszczalna",
+      "Family": "Cucurbitaceae",
+      "Edible parts": [
+        "Owoce"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew rozsady",
+          "dateRange": {
+            "start": "15-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Sadzenie",
+          "dateRange": {
+            "start": "20-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-04",
+        "end": "15-05"
+      },
+      "pests": [
+        "Przędziorki",
+        "Mszyce"
+      ],
+      "diseases": [
+        "Mączniak prawdziwy",
+        "Antraknoza"
+      ],
+      "companions": [
+        "Kukurydza",
+        "Fasola",
+        "Koper"
+      ],
+      "incompatibles": [
+        "Ziemniak",
+        "Rzodkiewka",
+        "Pomidor"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 15.0,
+          "max": 25.0
+        },
+        "harvest": {
+          "min": 18.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie owoców",
+        "90": "Dojrzewanie"
+      }
+    },
+    "papryka": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "7a-8a",
+      "Soil type": "Żyzna, dobrze przepuszczalna",
+      "Family": "Solanaceae",
+      "Edible parts": [
+        "Owoce"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew rozsady",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie",
+          "dateRange": {
+            "start": "15-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Mszyce",
+        "Wciornastki"
+      ],
+      "diseases": [
+        "Wertycylioza",
+        "Zgnilizna twardzikowa"
+      ],
+      "companions": [
+        "Bazylia",
+        "Marchew",
+        "Oregano"
+      ],
+      "incompatibles": [
+        "Fasola",
+        "Burak",
+        "Kalarepa"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 15.0,
+          "max": 25.0
+        },
+        "harvest": {
+          "min": 18.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie owoców",
+        "90": "Dojrzewanie"
+      }
+    },
+    "kalafior": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Gliniasta, pH 6.0-7.5",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Kwiatostan"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew rozsady",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie",
+          "dateRange": {
+            "start": "15-04",
+            "end": "10-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-06",
+            "end": "30-07"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Bielinek kapustnik",
+        "Mszyce"
+      ],
+      "diseases": [
+        "Czarna zgnilizna",
+        "Mączniak rzekomy"
+      ],
+      "companions": [
+        "Seler",
+        "Szpinak",
+        "Koper"
+      ],
+      "incompatibles": [
+        "Truskawki",
+        "Fasola",
+        "Pomidor"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "harvest": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Formowanie główki",
+        "60": "Zawijanie liści",
+        "90": "Dojrzałość"
+      }
+    },
+    "bakłażan": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "7a-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-6.8",
+      "Family": "Solanaceae",
+      "Edible parts": [
+        "Owoce"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-01",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-01",
+        "end": "31-03"
+      },
+      "pests": [
+        "Mszyce",
+        "Przędziorki"
+      ],
+      "diseases": [
+        "Szara pleśń",
+        "Wertycylioza"
+      ],
+      "companions": [
+        "Fasola",
+        "Groch",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Papryka",
+        "Ziemniak"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 15.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 20.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie owoców",
+        "90": "Dojrzewanie owoców"
+      }
+    },
+    "batat": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Piaszczysta, przepuszczalna, pH 5.5-6.5",
+      "Family": "Convolvulaceae",
+      "Edible parts": [
+        "Bulwy"
+      ],
+      "careSteps": [
+        {
+          "task": "Sadzenie sadzonek",
+          "dateRange": {
+            "start": "15-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Formowanie kopców",
+          "dateRange": {
+            "start": "01-06",
+            "end": "30-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "15-09",
+            "end": "15-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "30-04"
+      },
+      "pests": [
+        "Drutowce",
+        "Pędraki"
+      ],
+      "diseases": [
+        "Czarna zgnilizna",
+        "Fuzarioza"
+      ],
+      "companions": [
+        "Kukurydza",
+        "Fasola",
+        "Słonecznik"
+      ],
+      "incompatibles": [
+        "Ziemniak",
+        "Pomidor",
+        "Dynia"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 15.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 20.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozrost pędów",
+        "60": "Formowanie bulw",
+        "90": "Dojrzewanie bulw"
+      }
+    },
+    "botwina": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.0",
+      "Family": "Amaranthaceae",
+      "Edible parts": [
+        "Liście",
+        "Korzenie"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Przerywanie",
+          "dateRange": {
+            "start": "15-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-06",
+            "end": "31-07"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "15-05"
+      },
+      "pests": [
+        "Śmietka ćwiklanka",
+        "Mszyce"
+      ],
+      "diseases": [
+        "Chwościk buraka",
+        "Mączniak prawdziwy"
+      ],
+      "companions": [
+        "Cebula",
+        "Koper",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Szpinak",
+        "Burak",
+        "Mangold"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "15": "Rozwój liści",
+        "30": "Formowanie korzenia",
+        "45": "Gotowość do zbioru"
+      }
+    },
+    "burak": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Piaszczysto-gliniasta, pH 6.0-7.0",
+      "Family": "Amaranthaceae",
+      "Edible parts": [
+        "Korzeń",
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Przerywanie",
+          "dateRange": {
+            "start": "15-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "15-05"
+      },
+      "pests": [
+        "Śmietka ćwiklanka",
+        "Mszyce"
+      ],
+      "diseases": [
+        "Chwościk buraka",
+        "Mączniak prawdziwy"
+      ],
+      "companions": [
+        "Cebula",
+        "Kapusta",
+        "Fasola"
+      ],
+      "incompatibles": [
+        "Szpinak",
+        "Pomidor",
+        "Kukurydza"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 8.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie korzenia",
+        "90": "Dojrzewanie"
+      }
+    },
+    "chrzan": {
+      "Edible": true,
+      "Growth": "Perennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5a-8a",
+      "Soil type": "Głęboka, przepuszczalna, pH 6.0-7.0",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Korzeń"
+      ],
+      "careSteps": [
+        {
+          "task": "Sadzenie sadzonek",
+          "dateRange": {
+            "start": "15-03",
+            "end": "30-04"
+          }
+        },
+        {
+          "task": "Nawożenie",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-10",
+            "end": "30-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-03",
+        "end": "30-04"
+      },
+      "pests": [
+        "Pchełki ziemne",
+        "Gąsienice bielinka kapustnika"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Zgnilizna korzeni"
+      ],
+      "companions": [
+        "Ziemniak",
+        "Pomidor",
+        "Jabłoń"
+      ],
+      "incompatibles": [
+        "Fasola",
+        "Groch",
+        "Cebula"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 15.0
+        },
+        "growth": {
+          "min": 10.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "90": "Rozrost korzenia",
+        "180": "Dojrzewanie"
+      }
+    },
+    "ciecierzyca": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Low",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Przepuszczalna, pH 6.0-8.0",
+      "Family": "Fabaceae",
+      "Edible parts": [
+        "Nasiona"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "15-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Podlewanie",
+          "dateRange": {
+            "start": "01-06",
+            "end": "31-07"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-08",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-04",
+        "end": "15-05"
+      },
+      "pests": [
+        "Mszyce",
+        "Strąkowce"
+      ],
+      "diseases": [
+        "Fuzarioza",
+        "Askochytoza"
+      ],
+      "companions": [
+        "Kukurydza",
+        "Słonecznik",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Czosnek",
+        "Cebula",
+        "Por"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie strąków",
+        "90": "Dojrzewanie nasion"
+      }
+    },
+    "cukinia": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.5",
+      "Family": "Cucurbitaceae",
+      "Edible parts": [
+        "Owoce",
+        "Kwiaty"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-05",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Formowanie kopców",
+          "dateRange": {
+            "start": "15-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-05",
+        "end": "15-05"
+      },
+      "pests": [
+        "Przędziorki",
+        "Mączlik szklarniowy"
+      ],
+      "diseases": [
+        "Mączniak prawdziwy",
+        "Zgnilizna twardzikowa"
+      ],
+      "companions": [
+        "Fasola",
+        "Kukurydza",
+        "Nasturcja"
+      ],
+      "incompatibles": [
+        "Ziemniak",
+        "Pomidor",
+        "Dynia"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 18.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "45": "Zawiązywanie owoców",
+        "60": "Dojrzewanie owoców"
+      }
+    },
+    "cykoria": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Głęboka, żyzna, pH 6.0-7.0",
+      "Family": "Asteraceae",
+      "Edible parts": [
+        "Liście",
+        "Korzenie"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Przerywanie",
+          "dateRange": {
+            "start": "01-06",
+            "end": "15-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-09",
+            "end": "30-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-05",
+        "end": "31-05"
+      },
+      "pests": [
+        "Mszyce",
+        "Ślimaki"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Cebula",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Słonecznik",
+        "Endywia",
+        "Seler"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 8.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie rozety",
+        "90": "Dojrzewanie"
+      }
+    },
+    "czosnek": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Low",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5a-8a",
+      "Soil type": "Przepuszczalna, próchnicza, pH 6.0-7.0",
+      "Family": "Amaryllidaceae",
+      "Edible parts": [
+        "Ząbki",
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Sadzenie ząbków",
+          "dateRange": {
+            "start": "01-10",
+            "end": "15-11"
+          }
+        },
+        {
+          "task": "Nawożenie",
+          "dateRange": {
+            "start": "01-04",
+            "end": "30-04"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-07"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-10",
+        "end": "15-11"
+      },
+      "pests": [
+        "Wciornastek tytoniowiec",
+        "Rozkruszek czosnkowy"
+      ],
+      "diseases": [
+        "Biała zgnilizna",
+        "Fuzarioza czosnku"
+      ],
+      "companions": [
+        "Marchew",
+        "Truskawka",
+        "Róża"
+      ],
+      "incompatibles": [
+        "Groch",
+        "Fasola",
+        "Kapusta"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 15.0
+        },
+        "growth": {
+          "min": 10.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie główki",
+        "90": "Dojrzewanie"
+      }
+    },
+    "bobik": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.5-7.5",
+      "Family": "Fabaceae",
+      "Edible parts": [
+        "Nasiona"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "15-03",
+            "end": "15-04"
+          }
+        },
+        {
+          "task": "Podlewanie",
+          "dateRange": {
+            "start": "01-05",
+            "end": "30-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-08"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-03",
+        "end": "15-04"
+      },
+      "pests": [
+        "Mszyca",
+        "Śmietka kiełkówka"
+      ],
+      "diseases": [
+        "Czekoladowa plamistość",
+        "Rdza bobu"
+      ],
+      "companions": [
+        "Marchew",
+        "Sałata",
+        "Szpinak"
+      ],
+      "incompatibles": [
+        "Czosnek",
+        "Cebula",
+        "Por"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 22.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie strąków",
+        "90": "Dojrzewanie nasion"
+      }
+    },
+    "brokuł": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.2",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Kwiatostan"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Mszyca kapuściana",
+        "Śmietka kapuściana"
+      ],
+      "diseases": [
+        "Kiła kapusty",
+        "Mączniak rzekomy"
+      ],
+      "companions": [
+        "Sałata",
+        "Cebula",
+        "Seler"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Truskawka",
+        "Fasola"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 24.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Formowanie rozety liściowej",
+        "60": "Zawiązywanie róży",
+        "90": "Dojrzewanie róży"
+      }
+    },
+    "brukselka": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Żyzna, gliniasta, pH 6.5-7.0",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Pąki liściowe"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-09",
+            "end": "15-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Mszyca kapuściana",
+        "Bielinek kapustnik"
+      ],
+      "diseases": [
+        "Kiła kapusty",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Seler",
+        "Szpinak",
+        "Koper"
+      ],
+      "incompatibles": [
+        "Truskawka",
+        "Fasola",
+        "Pomidor"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Formowanie łodygi",
+        "60": "Zawiązywanie główek",
+        "90": "Dojrzewanie główek"
+      }
+    },
+    "dynia": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.0",
+      "Family": "Cucurbitaceae",
+      "Edible parts": [
+        "Owoce",
+        "Nasiona",
+        "Kwiaty"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "10-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Formowanie kopców",
+          "dateRange": {
+            "start": "01-06",
+            "end": "15-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-09",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "10-05",
+        "end": "31-05"
+      },
+      "pests": [
+        "Przędziorki",
+        "Mączlik szklarniowy"
+      ],
+      "diseases": [
+        "Mączniak prawdziwy",
+        "Fuzarioza"
+      ],
+      "companions": [
+        "Kukurydza",
+        "Fasola",
+        "Bazylia"
+      ],
+      "incompatibles": [
+        "Ziemniak",
+        "Pomidor",
+        "Ogórek"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 12.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 18.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie owoców",
+        "90": "Dojrzewanie owoców"
+      }
+    },
+    "fasola": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Przepuszczalna, próchnicza, pH 6.0-7.0",
+      "Family": "Fabaceae",
+      "Edible parts": [
+        "Nasiona",
+        "Strąki"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "10-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Podpieranie tyczek",
+          "dateRange": {
+            "start": "01-06",
+            "end": "15-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-08",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "10-05",
+        "end": "31-05"
+      },
+      "pests": [
+        "Mszyca",
+        "Przędziorek chmielowiec"
+      ],
+      "diseases": [
+        "Antraknoza",
+        "Bakterioza obwódkowa"
+      ],
+      "companions": [
+        "Marchew",
+        "Ogórek",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Cebula",
+        "Czosnek",
+        "Por"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 18.0,
+          "max": 28.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "45": "Zawiązywanie strąków",
+        "60": "Dojrzewanie nasion"
+      }
+    },
+    "fasolka szparagowa": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Przepuszczalna, próchnicza, pH 6.0-7.0",
+      "Family": "Fabaceae",
+      "Edible parts": [
+        "Strąki"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Podpieranie tyczek",
+          "dateRange": {
+            "start": "01-06",
+            "end": "15-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-05",
+        "end": "31-05"
+      },
+      "pests": [
+        "Mszyca",
+        "Przędziorek chmielowiec"
+      ],
+      "diseases": [
+        "Antraknoza",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Seler",
+        "Rzodkiewka"
+      ],
+      "incompatibles": [
+        "Cebula",
+        "Czosnek",
+        "Kapusta"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 18.0,
+          "max": 28.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "20": "Kwitnienie",
+        "35": "Zawiązywanie strąków",
+        "50": "Dojrzewanie strąków"
+      }
+    },
+    "fenkuł": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, przepuszczalna, pH 6.5-7.5",
+      "Family": "Apiaceae",
+      "Edible parts": [
+        "Bulwa",
+        "Liście",
+        "Nasiona"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "31-07"
+          }
+        },
+        {
+          "task": "Przerywanie siewek",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-08"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "31-07"
+      },
+      "pests": [
+        "Mszyce",
+        "Przędziorki"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Sałata",
+        "Koper"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Papryka",
+        "Ziemniak"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 12.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 20.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Formowanie liści",
+        "60": "Rozwój bulwy",
+        "90": "Dojrzewanie"
+      }
+    },
+    "groch": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Przepuszczalna, gliniasto-piaszczysta, pH 6.0-7.0",
+      "Family": "Fabaceae",
+      "Edible parts": [
+        "Nasiona",
+        "Strąki"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "15-03",
+            "end": "30-04"
+          }
+        },
+        {
+          "task": "Podpieranie roślin",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-08"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-03",
+        "end": "30-04"
+      },
+      "pests": [
+        "Mszyca",
+        "Śmietka kiełkówka"
+      ],
+      "diseases": [
+        "Fuzarioza",
+        "Askochytoza"
+      ],
+      "companions": [
+        "Marchew",
+        "Rzodkiewka",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Cebula",
+        "Czosnek",
+        "Por"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 4.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 22.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie strąków",
+        "90": "Dojrzewanie nasion"
+      }
+    },
+    "jarmuż": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "30-04"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "01-05",
+            "end": "15-07"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-09",
+            "end": "28-02"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "30-04"
+      },
+      "pests": [
+        "Mszyca kapuściana",
+        "Bielinek kapustnik"
+      ],
+      "diseases": [
+        "Kiła kapusty",
+        "Mączniak rzekomy"
+      ],
+      "companions": [
+        "Seler",
+        "Szpinak",
+        "Koper"
+      ],
+      "incompatibles": [
+        "Truskawki",
+        "Fasola",
+        "Pomidor"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie rozety",
+        "90": "Dojrzewanie liści"
+      }
+    },
+    "kalarepa": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.0",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Zgrubiała łodyga",
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "15-04"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-04",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-06",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "15-04"
+      },
+      "pests": [
+        "Śmietka kapuściana",
+        "Mszyca kapuściana"
+      ],
+      "diseases": [
+        "Kiła kapusty",
+        "Czarna zgnilizna"
+      ],
+      "companions": [
+        "Sałata",
+        "Cebula",
+        "Koper"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Fasola",
+        "Truskawka"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Formowanie liści",
+        "45": "Zgrubienie łodygi",
+        "60": "Dojrzewanie"
+      }
+    },
+    "kapusta pekińska": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.0",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-07"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "01-08",
+            "end": "15-08"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-10",
+            "end": "30-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-07",
+        "end": "31-07"
+      },
+      "pests": [
+        "Mszyca kapuściana",
+        "Śmietka kapuściana"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Seler",
+        "Ogórek",
+        "Koper"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Fasola",
+        "Truskawka"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 15.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 18.0,
+          "max": 28.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Formowanie rozety",
+        "45": "Zawijanie główki",
+        "60": "Dojrzewanie"
+      }
+    },
+    "karczoch": {
+      "Edible": true,
+      "Growth": "Perennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Żyzna, głęboka, pH 6.5-7.5",
+      "Family": "Asteraceae",
+      "Edible parts": [
+        "Kwiatostany"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Mszyca",
+        "Ślimaki"
+      ],
+      "diseases": [
+        "Szara pleśń",
+        "Mączniak prawdziwy"
+      ],
+      "companions": [
+        "Groch",
+        "Sałata",
+        "Słonecznik"
+      ],
+      "incompatibles": [
+        "Marchew",
+        "Pietruszka",
+        "Seler"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "60": "Formowanie rozety",
+        "90": "Rozwój pędu kwiatowego",
+        "120": "Dojrzewanie kwiatostanów"
+      }
+    },
+    "koper": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, przepuszczalna, pH 6.0-7.0",
+      "Family": "Apiaceae",
+      "Edible parts": [
+        "Liście",
+        "Nasiona"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "15-04",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Przerzedzanie",
+          "dateRange": {
+            "start": "01-05",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-06",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-04",
+        "end": "31-05"
+      },
+      "pests": [
+        "Mszyca",
+        "Muchówki"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Ogórek",
+        "Kapusta"
+      ],
+      "incompatibles": [
+        "Koper włoski",
+        "Marchew",
+        "Pietruszka"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Kwitnienie",
+        "90": "Dojrzewanie nasion"
+      }
+    },
+    "kukurydza": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, przepuszczalna, pH 6.0-7.0",
+      "Family": "Poaceae",
+      "Edible parts": [
+        "Ziarna",
+        "Kolby"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-05",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Nawożenie",
+          "dateRange": {
+            "start": "01-06",
+            "end": "15-07"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-08",
+            "end": "30-09"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-05",
+        "end": "15-05"
+      },
+      "pests": [
+        "Omacnica prosowianka",
+        "Stonka kukurydziana"
+      ],
+      "diseases": [
+        "Głownia kukurydzy",
+        "Fuzarioza"
+      ],
+      "companions": [
+        "Fasola",
+        "Dynia",
+        "Słonecznik"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Burak",
+        "Seler"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 18.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Kwitnienie",
+        "90": "Dojrzewanie ziaren"
+      }
+    },
+    "pasternak": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Przepuszczalna, żyzna, pH 6.5-7.0",
+      "Family": "Apiaceae",
+      "Edible parts": [
+        "Korzeń",
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "30-04"
+          }
+        },
+        {
+          "task": "Przerzedzanie",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-10",
+            "end": "30-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "30-04"
+      },
+      "pests": [
+        "Połyśnica marchwianka",
+        "Mszyce"
+      ],
+      "diseases": [
+        "Chwościk pasternaku",
+        "Mączniak prawdziwy"
+      ],
+      "companions": [
+        "Cebula",
+        "Por",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Marchew",
+        "Pietruszka",
+        "Seler"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 8.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie korzenia",
+        "90": "Dojrzewanie"
+      }
+    },
+    "patison": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "6a-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.5-7.0",
+      "Family": "Cucurbitaceae",
+      "Edible parts": [
+        "Owoce"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-05",
+            "end": "10-06"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-05",
+        "end": "31-05"
+      },
+      "pests": [
+        "Przędziorki",
+        "Mączlik szklarniowy"
+      ],
+      "diseases": [
+        "Mączniak prawdziwy",
+        "Fuzarioza"
+      ],
+      "companions": [
+        "Fasola",
+        "Kukurydza",
+        "Nasturcja"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Ziemniak",
+        "Dynia"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 15.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 18.0,
+          "max": 30.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Kwitnienie",
+        "60": "Zawiązywanie owoców",
+        "90": "Dojrzewanie owoców"
+      }
+    },
+    "pietruszka": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Piaszczysto-gliniasta, pH 6.0-7.0",
+      "Family": "Apiaceae",
+      "Edible parts": [
+        "Korzenie",
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "15-04"
+          }
+        },
+        {
+          "task": "Pielenie grządek",
+          "dateRange": {
+            "start": "01-05",
+            "end": "30-09"
+          }
+        },
+        {
+          "task": "Zbiór korzeni",
+          "dateRange": {
+            "start": "01-10",
+            "end": "15-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "15-04"
+      },
+      "pests": [
+        "Połyśnica marchwianka",
+        "Mszyce"
+      ],
+      "diseases": [
+        "Chwościk pietruszki",
+        "Mączniak prawdziwy"
+      ],
+      "companions": [
+        "Cebula",
+        "Pomidor",
+        "Rzodkiewka"
+      ],
+      "incompatibles": [
+        "Marchew",
+        "Seler",
+        "Kapusta"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 2.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie korzenia",
+        "90": "Dojrzewanie"
+      }
+    },
+    "por": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.0",
+      "Family": "Amaryllidaceae",
+      "Edible parts": [
+        "Łodyga"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "15-02",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-09",
+            "end": "30-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-02",
+        "end": "31-03"
+      },
+      "pests": [
+        "Wciornastek tytoniowiec",
+        "Śmietka cebulanka"
+      ],
+      "diseases": [
+        "Rdza pora",
+        "Alternarioza"
+      ],
+      "companions": [
+        "Marchew",
+        "Seler",
+        "Truskawka"
+      ],
+      "incompatibles": [
+        "Fasola",
+        "Groch",
+        "Kapusta"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie łodygi",
+        "90": "Dojrzewanie"
+      }
+    },
+    "rabarbar": {
+      "Edible": true,
+      "Growth": "Perennial",
+      "Water requirement": "High",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.0",
+      "Family": "Polygonaceae",
+      "Edible parts": [
+        "Ogonki liściowe"
+      ],
+      "careSteps": [
+        {
+          "task": "Sadzenie",
+          "dateRange": {
+            "start": "15-03",
+            "end": "30-04"
+          }
+        },
+        {
+          "task": "Nawożenie",
+          "dateRange": {
+            "start": "01-04",
+            "end": "31-08"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-07"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "15-03",
+        "end": "30-04"
+      },
+      "pests": [
+        "Mszyca",
+        "Ślimaki"
+      ],
+      "diseases": [
+        "Zgnilizna ogonków liściowych",
+        "Rdza"
+      ],
+      "companions": [
+        "Truskawka",
+        "Czosnek",
+        "Szpinak"
+      ],
+      "incompatibles": [
+        "Pomidor",
+        "Ogórek",
+        "Ziemniak"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie ogonków",
+        "90": "Dojrzewanie"
+      }
+    },
+    "roszponka": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, przepuszczalna, pH 6.0-7.0",
+      "Family": "Valerianaceae",
+      "Edible parts": [
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion (zbiór jesienny)",
+          "dateRange": {
+            "start": "01-07",
+            "end": "31-08"
+          }
+        },
+        {
+          "task": "Siew nasion (zbiór zimowy)",
+          "dateRange": {
+            "start": "01-09",
+            "end": "30-09"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-10",
+            "end": "28-02"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-07",
+        "end": "30-09"
+      },
+      "pests": [
+        "Mszyce",
+        "Ślimaki"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Cebula",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Słonecznik",
+        "Endywia",
+        "Seler"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 8.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 20.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "15": "Rozwój liści",
+        "30": "Formowanie rozety",
+        "45": "Gotowość do zbioru"
+      }
+    },
+    "rukola": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Przepuszczalna, żyzna, pH 6.0-7.0",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "31-08"
+          }
+        },
+        {
+          "task": "Przerzedzanie",
+          "dateRange": {
+            "start": "15-04",
+            "end": "15-09"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "31-08"
+      },
+      "pests": [
+        "Pchełki ziemne",
+        "Gąsienice bielinka"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Zgnilizna twardzikowa"
+      ],
+      "companions": [
+        "Sałata",
+        "Marchew",
+        "Pomidor"
+      ],
+      "incompatibles": [
+        "Kapusta",
+        "Brokuł",
+        "Kalafior"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "15": "Rozwój liści",
+        "30": "Formowanie rozety",
+        "45": "Gotowość do zbioru"
+      }
+    },
+    "rzepa": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Średnio zwięzła, lekka, pH 6.0-6.5",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Korzeń",
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "15-08"
+          }
+        },
+        {
+          "task": "Nawadnianie",
+          "dateRange": {
+            "start": "01-05",
+            "end": "30-09"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-06",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "15-08"
+      },
+      "pests": [
+        "Mszyca",
+        "Śmietka kapuściana"
+      ],
+      "diseases": [
+        "Kiła kapusty",
+        "Mączniak rzekomy"
+      ],
+      "companions": [
+        "Marchew",
+        "Sałata",
+        "Szpinak"
+      ],
+      "incompatibles": [
+        "Kapusta",
+        "Brokuł",
+        "Kalafior"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 10.0,
+          "max": 20.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie korzenia",
+        "90": "Dojrzewanie"
+      }
+    },
+    "rzeżucha": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, przepuszczalna, pH 6.0-7.0",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "30-09"
+          }
+        },
+        {
+          "task": "Podlewanie",
+          "dateRange": {
+            "start": "01-03",
+            "end": "30-09"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "07-03",
+            "end": "07-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "30-09"
+      },
+      "pests": [
+        "Mszyce",
+        "Ślimaki"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Sałata",
+        "Pomidor"
+      ],
+      "incompatibles": [
+        "Kapusta",
+        "Brokuł",
+        "Kalafior"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 25.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "5": "Kiełkowanie",
+        "10": "Rozwój liści",
+        "15": "Gotowość do zbioru"
+      }
+    },
+    "rzodkiewka": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Piaszczysta lub gliniasta, żyzna, pH 6.0-7.0",
+      "Family": "Brassicaceae",
+      "Edible parts": [
+        "Korzeń"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-08"
+          }
+        },
+        {
+          "task": "Podlewanie",
+          "dateRange": {
+            "start": "01-03",
+            "end": "30-09"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-04",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-08"
+      },
+      "pests": [
+        "Pchełki ziemne",
+        "Śmietka kapuściana"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Zgnilizna twardzikowa"
+      ],
+      "companions": [
+        "Marchew",
+        "Sałata",
+        "Szpinak"
+      ],
+      "incompatibles": [
+        "Kapusta",
+        "Brokuł",
+        "Kalafior"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 5.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 10.0,
+          "max": 15.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "7": "Kiełkowanie",
+        "14": "Rozwój liści",
+        "30": "Gotowość do zbioru"
+      }
+    },
+    "sałata": {
+      "Edible": true,
+      "Growth": "Annual",
+      "Water requirement": "High",
+      "Light requirement": "Full sun to partial shade",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, próchnicza, pH 6.0-7.0",
+      "Family": "Asteraceae",
+      "Edible parts": [
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-08"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-04",
+            "end": "15-09"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-08"
+      },
+      "pests": [
+        "Mszyce",
+        "Ślimaki"
+      ],
+      "diseases": [
+        "Mączniak rzekomy",
+        "Szara pleśń"
+      ],
+      "companions": [
+        "Marchew",
+        "Rzodkiewka",
+        "Ogórek"
+      ],
+      "incompatibles": [
+        "Seler",
+        "Pietruszka",
+        "Słonecznik"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "45": "Formowanie główki",
+        "60": "Gotowość do zbioru"
+      }
+    },
+    "seler": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "High",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Żyzna, wilgotna, pH 6.0-7.0",
+      "Family": "Apiaceae",
+      "Edible parts": [
+        "Korzeń",
+        "Łodyga",
+        "Liście"
+      ],
+      "careSteps": [
+        {
+          "task": "Wysiew nasion",
+          "dateRange": {
+            "start": "01-03",
+            "end": "31-03"
+          }
+        },
+        {
+          "task": "Sadzenie rozsady",
+          "dateRange": {
+            "start": "15-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-09",
+            "end": "31-10"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-03",
+        "end": "31-03"
+      },
+      "pests": [
+        "Połyśnica marchwianka",
+        "Mszyca selerowa"
+      ],
+      "diseases": [
+        "Septorioza selera",
+        "Zgnilizna twardzikowa"
+      ],
+      "companions": [
+        "Kapusta",
+        "Por",
+        "Pomidor"
+      ],
+      "incompatibles": [
+        "Kukurydza",
+        "Ziemniak",
+        "Marchew"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 10.0,
+          "max": 20.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "60": "Rozwój liści",
+        "90": "Formowanie korzenia/łodygi",
+        "120": "Dojrzewanie"
+      }
+    },
+    "skorzonera": {
+      "Edible": true,
+      "Growth": "Biennial",
+      "Water requirement": "Medium",
+      "Light requirement": "Full sun",
+      "USDA Hardiness zone": "5b-8a",
+      "Soil type": "Piaszczysto-gliniasta, pH 6.0-7.0",
+      "Family": "Asteraceae",
+      "Edible parts": [
+        "Korzeń"
+      ],
+      "careSteps": [
+        {
+          "task": "Siew nasion",
+          "dateRange": {
+            "start": "01-04",
+            "end": "15-05"
+          }
+        },
+        {
+          "task": "Przerzedzanie",
+          "dateRange": {
+            "start": "01-05",
+            "end": "31-05"
+          }
+        },
+        {
+          "task": "Zbiór",
+          "dateRange": {
+            "start": "01-10",
+            "end": "30-11"
+          }
+        }
+      ],
+      "sowingDate": {
+        "start": "01-04",
+        "end": "15-05"
+      },
+      "pests": [
+        "Pchełki ziemne",
+        "Drutowce"
+      ],
+      "diseases": [
+        "Mączniak prawdziwy",
+        "Rdza"
+      ],
+      "companions": [
+        "Groch",
+        "Fasola",
+        "Sałata"
+      ],
+      "incompatibles": [
+        "Marchew",
+        "Pietruszka",
+        "Pasternak"
+      ],
+      "weatherDependencies": {
+        "planting": {
+          "min": 8.0,
+          "max": 18.0
+        },
+        "growth": {
+          "min": 15.0,
+          "max": 25.0
+        }
+      },
+      "growthPhaseTriggers": {
+        "30": "Rozwój liści",
+        "60": "Formowanie korzenia",
+        "120": "Dojrzewanie"
+      }
+    }
+  }
+}
