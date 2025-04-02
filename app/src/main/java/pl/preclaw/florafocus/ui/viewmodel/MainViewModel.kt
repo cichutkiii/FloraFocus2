@@ -84,6 +84,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             dao.insert(userPlant)
         }
     }
+    fun addUserPlantToLocation(plant: Plant, locationId: String) {
+        viewModelScope.launch {
+            val name = if (plant.commonName.isNotEmpty()) {
+                plant.commonName
+            } else {
+                plant.id ?: "Nieznana roślina"
+            }
+
+            val userPlant = UserPlant(
+                name = name,
+                careSteps = plant.careSteps,
+                locationId = locationId // Dodanie powiązania z lokalizacją
+            )
+            dao.insert(userPlant)
+        }
+    }
 
     // Usuń roślinę z listy użytkownika
     fun removeUserPlant(plant: UserPlant) {

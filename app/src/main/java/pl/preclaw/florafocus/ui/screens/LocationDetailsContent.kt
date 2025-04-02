@@ -160,8 +160,10 @@ fun LocationDetailsContent(
     if (showAddPlantDialog) {
         AddPlantToLocationDialog(
             plants = plants,
+            locationId = location.id, // Przekazanie id lokalizacji
             onDismiss = { showAddPlantDialog = false },
             onPlantSelected = { plant, variety, quantity, notes, plantingDate ->
+                // Teraz dodawanie do gardenViewModel i mainViewModel odbywa się jednocześnie
                 gardenViewModel.addPlantPlacement(
                     PlantPlacementEntity(
                         plantId = plant.id ?: "",
@@ -173,7 +175,8 @@ fun LocationDetailsContent(
                     )
                 )
                 showAddPlantDialog = false
-            }
+            },
+            mainViewModel = mainViewModel // Przekazanie viewModelu
         )
     }
 

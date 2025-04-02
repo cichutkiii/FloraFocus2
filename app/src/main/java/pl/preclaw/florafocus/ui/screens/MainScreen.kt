@@ -71,7 +71,7 @@ fun MainScreen(onAddPlantClick: () -> Unit) {
                 0 -> TasksScreen(mainViewModel)
                 1 -> PlantsScreen(
                     plants = plants,
-                    onAddPlantClick = onAddPlantClick,
+                    gardenViewModel = gardenViewModel,
                     viewModel = mainViewModel
                 )
                 2 -> PlacesScreen(

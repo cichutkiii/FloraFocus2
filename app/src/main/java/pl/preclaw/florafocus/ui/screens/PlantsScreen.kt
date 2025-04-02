@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.ui.text.style.TextAlign
+
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,36 +17,35 @@ import pl.preclaw.florafocus.data.model.Plant
 import pl.preclaw.florafocus.data.repository.UserPlant
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import pl.preclaw.florafocus.data.repository.SpaceWithAreas
+import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 
 @Composable
 fun PlantsScreen(
     plants: List<Plant>,
-    onAddPlantClick: () -> Unit,
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    gardenViewModel: GardenViewModel = viewModel()
 ) {
     val userPlants by viewModel.userPlants.collectAsState(initial = emptyList())
+    val allSpaces by gardenViewModel.allSpaces.collectAsState(initial = emptyList())
 
     Column {
-        Button(
-            onClick = onAddPlantClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Dodaj Roślinę"
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Dodaj nową roślinę")
-        }
-
         if (userPlants.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Nie masz jeszcze żadnych roślin")
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text("Nie masz jeszcze żadnych roślin")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Przejdź do zakładki 'Miejsca', aby dodać roślinę do konkretnej lokalizacji",
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         } else {
             LazyColumn(
@@ -54,6 +55,7 @@ fun PlantsScreen(
                 items(userPlants) { plant ->
                     UserPlantItem(
                         plant = plant,
+                        locationName = getLocationName(plant.locationId, allSpaces),
                         onRemove = { viewModel.removeUserPlant(plant) }
                     )
                 }
@@ -62,9 +64,24 @@ fun PlantsScreen(
     }
 }
 
+// Funkcja pomocnicza do pobrania nazwy lokalizacji
+private fun getLocationName(locationId: String, spaces: List<SpaceWithAreas>): String {
+    spaces.forEach { space ->
+        space.areas.forEach { area ->
+            area.locations.forEach { location ->
+                if (location.id == locationId) {
+                    return "${space.space.name} > ${area.area.name} > ${location.name}"
+                }
+            }
+        }
+    }
+    return "Nieznana lokalizacja"
+}
+
 @Composable
 fun UserPlantItem(
     plant: UserPlant,
+    locationName: String,
     onRemove: () -> Unit
 ) {
     Card(
@@ -82,12 +99,16 @@ fun UserPlantItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = plant.name, // Upewnij się, że używasz plant.name
+                    text = plant.name,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Kroków pielęgnacyjnych: ${plant.careSteps.size}",
+                    text = "Lokalizacja: $locationName",
                     style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Kroków pielęgnacyjnych: ${plant.careSteps.size}",
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
             IconButton(onClick = onRemove) {

@@ -7,6 +7,7 @@ import pl.preclaw.florafocus.data.model.CareStep
 @Entity(tableName = "userplant")
 data class UserPlant(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String, // To powinno być pole na nazwę
-    val careSteps: List<CareStep>
+    val name: String,
+    val careSteps: List<CareStep>,
+    val locationId: String = "" // Domyślna pusta wartość dla kompatybilności z istniejącymi danymi
 )
