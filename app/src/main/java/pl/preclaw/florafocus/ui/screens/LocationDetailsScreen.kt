@@ -59,21 +59,7 @@ fun LocationDetailsScreen(
     var showAddPlantDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(location.name) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Powrót")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showAddPlantDialog = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Dodaj roślinę")
-                    }
-                }
-            )
-        }
+
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -263,7 +249,6 @@ fun PlantPlacementItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPlantToLocationDialog(
     plants: List<Plant>,

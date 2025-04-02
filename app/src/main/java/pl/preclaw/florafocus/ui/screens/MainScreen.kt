@@ -39,7 +39,6 @@ fun MainScreen(onAddPlantClick: () -> Unit) {
     val plants by mainViewModel.plants.collectAsState(initial = emptyList())
     val allPlants by mainViewModel.allPlants.collectAsState(initial = emptyList())
 
-    // Dialog wyboru roślin
     var showPlantSelection by remember { mutableStateOf(false) }
 
     Scaffold(

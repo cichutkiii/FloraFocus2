@@ -65,6 +65,11 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.RadioButton
 
+enum class NavigationLevel {
+    SPACES, AREAS, LOCATIONS, LOCATION_DETAILS
+}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +82,10 @@ fun PlacesScreen(
     // Stan dla wybranego obszaru i lokalizacji
     var selectedArea by remember { mutableStateOf<GardenAreaEntity?>(null) }
     var selectedLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
+    var currentLevel by remember { mutableStateOf(NavigationLevel.SPACES) }
+    val selectedSpace by remember { mutableStateOf<GardenSpaceEntity?>(null) }
+    var currentArea by remember { mutableStateOf<GardenAreaEntity?>(null) }
+    var currentLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
 
     // Stan dla wybranej/domyślnej przestrzeni głównej
     var selectedSpaceIndex by remember { mutableStateOf(0) }
@@ -91,7 +100,7 @@ fun PlacesScreen(
     var showOverflowMenu by remember { mutableStateOf(false) }
 
     // Pobierz aktualną przestrzeń i jej obszary
-    val currentSpace = if (spacesWithAreas.isNotEmpty()) {
+    var currentSpace = if (spacesWithAreas.isNotEmpty()) {
         spacesWithAreas.getOrNull(selectedSpaceIndex)
     } else null
 
@@ -99,84 +108,51 @@ fun PlacesScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    if (selectedLocation != null) {
-                        Text(selectedLocation!!.name)
-                    } else if (selectedArea != null) {
-                        Text(selectedArea!!.name)
-                    } else {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(currentSpace?.space?.name ?: "Miejsca")
-                            if (spacesWithAreas.size > 1) {
-                                IconButton(onClick = { showChangeSpaceDialog = true }) {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "Zmień przestrzeń"
-                                    )
-                                }
-                            }
-                        }
+                    when (currentLevel) {
+                        NavigationLevel.SPACES -> Text("Miejsca")
+                        NavigationLevel.AREAS -> Text(selectedSpace?.name ?: "")
+                        NavigationLevel.LOCATIONS -> Text(currentArea?.name ?: "")
+                        NavigationLevel.LOCATION_DETAILS -> Text(currentLocation?.name ?: "")
                     }
                 },
                 navigationIcon = {
-                    if (selectedLocation != null || selectedArea != null) {
+                    if (currentLevel != NavigationLevel.SPACES) {
                         IconButton(onClick = {
-                            if (selectedLocation != null) {
-                                selectedLocation = null
-                            } else {
-                                selectedArea = null
+                            when (currentLevel) {
+                                NavigationLevel.AREAS -> {
+                                    currentSpace = null
+                                    currentLevel = NavigationLevel.SPACES
+                                }
+                                NavigationLevel.LOCATIONS -> {
+                                    currentArea = null
+                                    currentLevel = NavigationLevel.AREAS
+                                }
+                                NavigationLevel.LOCATION_DETAILS -> {
+                                    currentLocation = null
+                                    currentLevel = NavigationLevel.LOCATIONS
+                                }
+                                else -> {}
                             }
                         }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Powrót")
                         }
                     }
-                },
-                actions = {
-                    // Przycisk dodawania
-                    IconButton(onClick = {
-                        if (selectedLocation != null) {
-                            // Tu będzie obsługa dodawania rośliny do lokalizacji
-                        } else if (selectedArea != null) {
-                            showAddLocationDialog = true
-                        } else if (currentSpace != null) {
-                            showAddAreaDialog = true
-                        }
-                    }) {
-                        Icon(Icons.Default.Add, contentDescription = "Dodaj")
-                    }
-
-                    // Menu z trzema kropkami
-                    Box {
-                        IconButton(onClick = { showOverflowMenu = true }) {
-                            Icon(
-                                Icons.Default.MoreVert,
-                                contentDescription = "Więcej opcji"
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = showOverflowMenu,
-                            onDismissRequest = { showOverflowMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Zmień przestrzeń główną") },
-                                onClick = {
-                                    showChangeSpaceDialog = true
-                                    showOverflowMenu = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Dodaj nową przestrzeń główną") },
-                                onClick = {
-                                    showAddSpaceDialog = true
-                                    showOverflowMenu = false
-                                }
-                            )
-                        }
-                    }
                 }
             )
+
+// W body Scaffold renderujesz zawartość w zależności od currentLevel
+            when (currentLevel) {
+                NavigationLevel.SPACES -> { /* Lista przestrzeni */ }
+                NavigationLevel.AREAS -> { /* Lista obszarów */ }
+                NavigationLevel.LOCATIONS -> { /* Lista lokalizacji */ }
+                NavigationLevel.LOCATION_DETAILS -> {
+                    LocationDetailsContent(
+                        location = currentLocation!!,
+                        gardenViewModel = gardenViewModel,
+                        mainViewModel = mainViewModel
+                    )
+                }
+            }
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
@@ -216,11 +192,11 @@ fun PlacesScreen(
                         EmptySpacesMessage(onAddClick = { showAddSpaceDialog = true })
                     } else {
                         // Pokaż obszary z wybranej przestrzeni
-                        val areas by gardenViewModel.getAreasForSpace(currentSpace.space.id)
+                        val areas by gardenViewModel.getAreasForSpace(currentSpace!!.space.id)
                             .collectAsState(initial = emptyList())
 
                         if (areas.isEmpty()) {
-                            EmptyListMessage("obszarów w ${currentSpace.space.name}")
+                            EmptyListMessage("obszarów w ${currentSpace!!.space.name}")
                         } else {
                             AreasList(
                                 areas = areas,
@@ -272,7 +248,7 @@ fun PlacesScreen(
                     GardenAreaEntity(
                         name = name,
                         description = description,
-                        parentId = currentSpace.space.id
+                        parentId = currentSpace!!.space.id
                     )
                 )
                 showAddAreaDialog = false
