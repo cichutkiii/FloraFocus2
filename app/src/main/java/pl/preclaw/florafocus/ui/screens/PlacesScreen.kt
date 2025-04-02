@@ -14,17 +14,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Grass
 import androidx.compose.material.icons.filled.Landscape
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Yard
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -53,7 +50,6 @@ import pl.preclaw.florafocus.data.model.SoilType
 import pl.preclaw.florafocus.data.repository.GardenAreaEntity
 import pl.preclaw.florafocus.data.repository.GardenSpaceEntity
 import pl.preclaw.florafocus.data.repository.PlantLocationEntity
-import pl.preclaw.florafocus.data.repository.SpaceWithAreas
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 import androidx.compose.foundation.layout.Arrangement
@@ -69,8 +65,6 @@ enum class NavigationLevel {
     SPACES, AREAS, LOCATIONS, LOCATION_DETAILS
 }
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlacesScreen(
@@ -80,27 +74,13 @@ fun PlacesScreen(
     val spacesWithAreas by gardenViewModel.allSpaces.collectAsState(initial = emptyList())
 
     // Stan dla wybranego obszaru i lokalizacji
-    var selectedArea by remember { mutableStateOf<GardenAreaEntity?>(null) }
-    var selectedLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
     var currentLevel by remember { mutableStateOf(NavigationLevel.SPACES) }
-    val selectedSpace by remember { mutableStateOf<GardenSpaceEntity?>(null) }
+    var selectedSpaceIndex by remember { mutableStateOf(0) }
     var currentArea by remember { mutableStateOf<GardenAreaEntity?>(null) }
     var currentLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
 
-    // Stan dla wybranej/domyślnej przestrzeni głównej
-    var selectedSpaceIndex by remember { mutableStateOf(0) }
-
-    // Stan dla dialogów
-    var showChangeSpaceDialog by remember { mutableStateOf(false) }
-    var showAddAreaDialog by remember { mutableStateOf(false) }
-    var showAddLocationDialog by remember { mutableStateOf(false) }
-    var showAddSpaceDialog by remember { mutableStateOf(false) }
-
-    // Menu z trzema kropkami
-    var showOverflowMenu by remember { mutableStateOf(false) }
-
-    // Pobierz aktualną przestrzeń i jej obszary
-    var currentSpace = if (spacesWithAreas.isNotEmpty()) {
+    // Pobierz aktualną przestrzeń
+    val currentSpace = if (spacesWithAreas.isNotEmpty()) {
         spacesWithAreas.getOrNull(selectedSpaceIndex)
     } else null
 
@@ -110,7 +90,7 @@ fun PlacesScreen(
                 title = {
                     when (currentLevel) {
                         NavigationLevel.SPACES -> Text("Miejsca")
-                        NavigationLevel.AREAS -> Text(selectedSpace?.name ?: "")
+                        NavigationLevel.AREAS -> Text(currentSpace?.space?.name ?: "")
                         NavigationLevel.LOCATIONS -> Text(currentArea?.name ?: "")
                         NavigationLevel.LOCATION_DETAILS -> Text(currentLocation?.name ?: "")
                     }
@@ -120,7 +100,6 @@ fun PlacesScreen(
                         IconButton(onClick = {
                             when (currentLevel) {
                                 NavigationLevel.AREAS -> {
-                                    currentSpace = null
                                     currentLevel = NavigationLevel.SPACES
                                 }
                                 NavigationLevel.LOCATIONS -> {
@@ -138,143 +117,88 @@ fun PlacesScreen(
                         }
                     }
                 }
-            )
 
-// W body Scaffold renderujesz zawartość w zależności od currentLevel
-            when (currentLevel) {
-                NavigationLevel.SPACES -> { /* Lista przestrzeni */ }
-                NavigationLevel.AREAS -> { /* Lista obszarów */ }
-                NavigationLevel.LOCATIONS -> { /* Lista lokalizacji */ }
-                NavigationLevel.LOCATION_DETAILS -> {
-                    LocationDetailsContent(
-                        location = currentLocation!!,
-                        gardenViewModel = gardenViewModel,
-                        mainViewModel = mainViewModel
-                    )
-                }
-            }
+
+            )
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            when {
-                // Widok szczegółów lokalizacji
-                selectedLocation != null -> {
-                    LocationDetailsScreen(
-                        location = selectedLocation!!,
-                        onBack = { selectedLocation = null },
-                        gardenViewModel = gardenViewModel,
-                        mainViewModel = mainViewModel
-                    )
+            when (currentLevel) {
+                NavigationLevel.SPACES -> {
+                    // Lista przestrzeni
+                    if (currentSpace == null) {
+                        EmptySpacesMessage(onAddClick = { /* Pokaż dialog dodawania przestrzeni */ })
+                    } else {
+                        val spaces = spacesWithAreas.map { it.space }
+                        SpacesList(
+                            spaces = spaces,
+                            onSpaceClick = { space ->
+                                // Znajdź indeks wybranej przestrzeni
+                                val index = spaces.indexOf(space)
+                                if (index >= 0) {
+                                    selectedSpaceIndex = index
+                                    currentLevel = NavigationLevel.AREAS
+                                }
+                            },
+                            onDeleteClick = { /* Obsługa usuwania */ }
+                        )
+                    }
                 }
 
-                // Widok lokalizacji w obszarze
-                selectedArea != null -> {
-                    val locations by gardenViewModel.getLocationsForArea(selectedArea!!.id)
-                        .collectAsState(initial = emptyList())
+                NavigationLevel.AREAS -> {
+                    // Lista obszarów w wybranej przestrzeni
+                    if (currentSpace != null) {
+                        val areas by gardenViewModel.getAreasForSpace(currentSpace.space.id)
+                            .collectAsState(initial = emptyList())
 
-                    Column {
-                        if (locations.isEmpty()) {
-                            EmptyListMessage("lokalizacji")
+                        if (areas.isEmpty()) {
+                            EmptyListMessage("obszarów w ${currentSpace.space.name}")
                         } else {
-                            LocationsList(
-                                locations = locations,
-                                onLocationClick = { selectedLocation = it },
-                                onDeleteClick = { gardenViewModel.deleteLocation(it) }
+                            AreasList(
+                                areas = areas,
+                                onAreaClick = { area ->
+                                    currentArea = area
+                                    currentLevel = NavigationLevel.LOCATIONS
+                                },
+                                onDeleteClick = { /* Obsługa usuwania */ }
                             )
                         }
                     }
                 }
 
-                // Widok domyślny - obszary w wybranej przestrzeni
-                else -> {
-                    if (currentSpace == null) {
-                        // Brak przestrzeni - pokaż komunikat powitalny i przycisk dodawania
-                        EmptySpacesMessage(onAddClick = { showAddSpaceDialog = true })
-                    } else {
-                        // Pokaż obszary z wybranej przestrzeni
-                        val areas by gardenViewModel.getAreasForSpace(currentSpace!!.space.id)
+                NavigationLevel.LOCATIONS -> {
+                    // Lista lokalizacji w wybranym obszarze
+                    if (currentArea != null) {
+                        val locations by gardenViewModel.getLocationsForArea(currentArea!!.id)
                             .collectAsState(initial = emptyList())
 
-                        if (areas.isEmpty()) {
-                            EmptyListMessage("obszarów w ${currentSpace!!.space.name}")
+                        if (locations.isEmpty()) {
+                            EmptyListMessage("lokalizacji w ${currentArea!!.name}")
                         } else {
-                            AreasList(
-                                areas = areas,
-                                onAreaClick = { selectedArea = it },
-                                onDeleteClick = { gardenViewModel.deleteArea(it) }
+                            LocationsList(
+                                locations = locations,
+                                onLocationClick = { location ->
+                                    currentLocation = location
+                                    currentLevel = NavigationLevel.LOCATION_DETAILS
+                                },
+                                onDeleteClick = { /* Obsługa usuwania */ }
                             )
                         }
+                    }
+                }
+
+                NavigationLevel.LOCATION_DETAILS -> {
+                    // Szczegóły lokalizacji
+                    if (currentLocation != null) {
+                        LocationDetailsContent(
+                            location = currentLocation!!,
+                            gardenViewModel = gardenViewModel,
+                            mainViewModel = mainViewModel
+                        )
                     }
                 }
             }
         }
-    }
-
-    // Dialog zmiany głównej przestrzeni
-    if (showChangeSpaceDialog) {
-        ChangeSpaceDialog(
-            spaces = spacesWithAreas.map { it.space },
-            selectedIndex = selectedSpaceIndex,
-            onDismiss = { showChangeSpaceDialog = false },
-            onSelect = { index ->
-                selectedSpaceIndex = index
-                showChangeSpaceDialog = false
-            }
-        )
-    }
-
-    // Dialog dodawania przestrzeni
-    if (showAddSpaceDialog) {
-        AddSpaceDialog(
-            onDismiss = { showAddSpaceDialog = false },
-            onAdd = { name, description ->
-                gardenViewModel.addSpace(
-                    GardenSpaceEntity(
-                        name = name,
-                        description = description
-                    )
-                )
-                showAddSpaceDialog = false
-            }
-        )
-    }
-
-    // Dialog dodawania obszaru
-    if (showAddAreaDialog && currentSpace != null) {
-        AddAreaDialog(
-            onDismiss = { showAddAreaDialog = false },
-            onAdd = { name, description ->
-                gardenViewModel.addArea(
-                    GardenAreaEntity(
-                        name = name,
-                        description = description,
-                        parentId = currentSpace!!.space.id
-                    )
-                )
-                showAddAreaDialog = false
-            }
-        )
-    }
-
-    // Dialog dodawania lokalizacji
-    if (showAddLocationDialog && selectedArea != null) {
-        AddLocationDialog(
-            onDismiss = { showAddLocationDialog = false },
-            onAdd = { name, description, type, light, soil, notes ->
-                gardenViewModel.addLocation(
-                    PlantLocationEntity(
-                        name = name,
-                        description = description,
-                        parentId = selectedArea!!.id,
-                        type = type,
-                        lightConditions = light,
-                        soilType = soil,
-                        notes = notes
-                    )
-                )
-                showAddLocationDialog = false
-            }
-        )
     }
 }
 
@@ -290,17 +214,16 @@ fun EmptyListMessage(itemType: String) {
 
 @Composable
 fun SpacesList(
-    spaces: List<SpaceWithAreas>,
+    spaces: List<GardenSpaceEntity>,
     onSpaceClick: (GardenSpaceEntity) -> Unit,
     onDeleteClick: (GardenSpaceEntity) -> Unit
 ) {
     ListItems(
         items = spaces,
         icon = Icons.Default.Yard,
-        onItemClick = { onSpaceClick(it.space) },
-        onDeleteClick = { onDeleteClick(it.space) },
-        itemContent = { spaceWithAreas ->
-            val space = spaceWithAreas.space
+        onItemClick = onSpaceClick,
+        onDeleteClick = onDeleteClick,
+        itemContent = { space ->
             Column {
                 Text(
                     text = space.name,
@@ -312,11 +235,7 @@ fun SpacesList(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                // Możesz również wyświetlić liczbę obszarów
-                Text(
-                    text = "Obszarów: ${spaceWithAreas.areas.size}",
-                    style = MaterialTheme.typography.bodySmall
-                )
+
             }
         }
     )
@@ -391,7 +310,6 @@ fun LocationsList(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationChip(text: String, icon: ImageVector) {
     AssistChip(
