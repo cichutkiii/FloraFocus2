@@ -59,6 +59,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.RadioButton
 
 enum class NavigationLevel {
@@ -78,6 +79,11 @@ fun PlacesScreen(
     var selectedSpaceIndex by remember { mutableStateOf(0) }
     var currentArea by remember { mutableStateOf<GardenAreaEntity?>(null) }
     var currentLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
+
+    // Stany dla dialogów
+    var showAddSpaceDialog by remember { mutableStateOf(false) }
+    var showAddAreaDialog by remember { mutableStateOf(false) }
+    var showAddLocationDialog by remember { mutableStateOf(false) }
 
     // Pobierz aktualną przestrzeń
     val currentSpace = if (spacesWithAreas.isNotEmpty()) {
@@ -117,8 +123,6 @@ fun PlacesScreen(
                         }
                     }
                 }
-
-
             )
         }
     ) { paddingValues ->
@@ -127,7 +131,7 @@ fun PlacesScreen(
                 NavigationLevel.SPACES -> {
                     // Lista przestrzeni
                     if (currentSpace == null) {
-                        EmptySpacesMessage(onAddClick = { /* Pokaż dialog dodawania przestrzeni */ })
+                        EmptySpacesMessage(onAddClick = { showAddSpaceDialog = true })
                     } else {
                         val spaces = spacesWithAreas.map { it.space }
                         SpacesList(
@@ -140,8 +144,23 @@ fun PlacesScreen(
                                     currentLevel = NavigationLevel.AREAS
                                 }
                             },
-                            onDeleteClick = { /* Obsługa usuwania */ }
+                            onDeleteClick = { space ->
+                                gardenViewModel.deleteSpace(space)
+                            }
                         )
+                    }
+
+                    // FAB dla dodawania nowej przestrzeni
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomEnd
+                    ) {
+                        FloatingActionButton(
+                            onClick = { showAddSpaceDialog = true },
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Dodaj przestrzeń")
+                        }
                     }
                 }
 
@@ -160,8 +179,23 @@ fun PlacesScreen(
                                     currentArea = area
                                     currentLevel = NavigationLevel.LOCATIONS
                                 },
-                                onDeleteClick = { /* Obsługa usuwania */ }
+                                onDeleteClick = { area ->
+                                    gardenViewModel.deleteArea(area)
+                                }
                             )
+                        }
+
+                        // FAB dla dodawania nowego obszaru
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            FloatingActionButton(
+                                onClick = { showAddAreaDialog = true },
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = "Dodaj obszar")
+                            }
                         }
                     }
                 }
@@ -181,8 +215,23 @@ fun PlacesScreen(
                                     currentLocation = location
                                     currentLevel = NavigationLevel.LOCATION_DETAILS
                                 },
-                                onDeleteClick = { /* Obsługa usuwania */ }
+                                onDeleteClick = { location ->
+                                    gardenViewModel.deleteLocation(location)
+                                }
                             )
+                        }
+
+                        // FAB dla dodawania nowej lokalizacji
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            FloatingActionButton(
+                                onClick = { showAddLocationDialog = true },
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = "Dodaj lokalizację")
+                            }
                         }
                     }
                 }
@@ -200,7 +249,60 @@ fun PlacesScreen(
             }
         }
     }
+
+    // Dialogi do dodawania nowych elementów
+    if (showAddSpaceDialog) {
+        AddSpaceDialog(
+            onDismiss = { showAddSpaceDialog = false },
+            onAdd = { name, description ->
+                gardenViewModel.addSpace(
+                    GardenSpaceEntity(
+                        name = name,
+                        description = description
+                    )
+                )
+                showAddSpaceDialog = false
+            }
+        )
+    }
+
+    if (showAddAreaDialog && currentSpace != null) {
+        AddAreaDialog(
+            onDismiss = { showAddAreaDialog = false },
+            onAdd = { name, description ->
+                gardenViewModel.addArea(
+                    GardenAreaEntity(
+                        name = name,
+                        description = description,
+                        parentId = currentSpace.space.id
+                    )
+                )
+                showAddAreaDialog = false
+            }
+        )
+    }
+
+    if (showAddLocationDialog && currentArea != null) {
+        AddLocationDialog(
+            onDismiss = { showAddLocationDialog = false },
+            onAdd = { name, description, type, light, soil, notes ->
+                gardenViewModel.addLocation(
+                    PlantLocationEntity(
+                        name = name,
+                        description = description,
+                        parentId = currentArea!!.id,
+                        type = type,
+                        lightConditions = light,
+                        soilType = soil,
+                        notes = notes
+                    )
+                )
+                showAddLocationDialog = false
+            }
+        )
+    }
 }
+
 
 @Composable
 fun EmptyListMessage(itemType: String) {
@@ -239,6 +341,7 @@ fun SpacesList(
             }
         }
     )
+
 }
 @Composable
 fun AreasList(
@@ -246,6 +349,8 @@ fun AreasList(
     onAreaClick: (GardenAreaEntity) -> Unit,
     onDeleteClick: (GardenAreaEntity) -> Unit
 ) {
+    var showAddAreaDialog by remember { mutableStateOf(false) }
+
     ListItems(
         items = areas,
         icon = Icons.Default.Landscape,
@@ -266,6 +371,18 @@ fun AreasList(
             }
         }
     )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        FloatingActionButton(
+            onClick = {showAddAreaDialog = true },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Dodaj obszar")
+        }
+    }
+
 }
 
 @Composable
@@ -308,6 +425,17 @@ fun LocationsList(
             }
         }
     )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        FloatingActionButton(
+            onClick = { /* Show dialog to add new Space */ },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Dodaj Miejsce")
+        }
+    }
 }
 
 @Composable
