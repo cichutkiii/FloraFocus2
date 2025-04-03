@@ -1,5 +1,6 @@
 package pl.preclaw.florafocus.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +20,8 @@ import pl.preclaw.florafocus.data.model.Plant
 import pl.preclaw.florafocus.data.repository.UserPlant
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import pl.preclaw.florafocus.data.repository.PlantLocationEntity
+import pl.preclaw.florafocus.data.repository.PlantPlacementEntity
 import pl.preclaw.florafocus.data.repository.SpaceWithAreas
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 
@@ -33,6 +36,7 @@ fun PlantsScreen(
     val allPlants by viewModel.allPlants.collectAsState()
 
     var showPlantSelectionDialog by remember { mutableStateOf(false) }
+    var selectedLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
 
     Scaffold(
         floatingActionButton = {
@@ -78,23 +82,96 @@ fun PlantsScreen(
         }
 
         // Dialog wyboru rośliny
-        if (showPlantSelectionDialog) {
+        if (selectedLocation != null) {
             PlantSelectionDialog(
                 plants = allPlants,
-                onDismiss = { showPlantSelectionDialog = false },
+                location = selectedLocation!!,
+                onDismiss = {
+                    selectedLocation = null
+                    showPlantSelectionDialog = false
+                },
                 onPlantSelected = { selectedPlant ->
-                    viewModel.addUserPlant(selectedPlant)
+                    // Dodaj roślinę do konkretnej lokalizacji
+                    viewModel.addUserPlantToLocation(selectedPlant, selectedLocation!!.id)
+
+                    // Dodaj wpis do PlantPlacement
+                    gardenViewModel.addPlantPlacement(
+                        PlantPlacementEntity(
+                            plantId = selectedPlant.id ?: "",
+                            locationId = selectedLocation!!.id
+                        )
+                    )
+
+                    selectedLocation = null
                     showPlantSelectionDialog = false
                 }
+            )
+        } else if (showPlantSelectionDialog) {
+            // Dialog wyboru lokalizacji
+            LocationSelectionDialog(
+                spaces = allSpaces,
+                onLocationSelected = { location ->
+                    selectedLocation = location
+                },
+                onDismiss = { showPlantSelectionDialog = false }
             )
         }
     }
 }
 
+
+@Composable
+fun LocationSelectionDialog(
+    spaces: List<SpaceWithAreas>,
+    onLocationSelected: (PlantLocationEntity) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Wybierz lokalizację") },
+        text = {
+            LazyColumn {
+                spaces.forEach { space ->
+                    item {
+                        Text(
+                            text = space.space.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+                    items(space.areas) { area ->
+                        area.locations.forEach { location ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onLocationSelected(location) }
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    text = "${area.area.name} - ${location.name}",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                            HorizontalDivider()
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Anuluj")
+            }
+        }
+    )
+}
+
 // Dodaj nowy composable dla dialogu wyboru rośliny
+
 @Composable
 fun PlantSelectionDialog(
     plants: List<Plant>,
+    location: PlantLocationEntity,
     onDismiss: () -> Unit,
     onPlantSelected: (Plant) -> Unit
 ) {
@@ -102,7 +179,9 @@ fun PlantSelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Wybierz roślinę") },
+        title = {
+            Text("Wybierz roślinę dla lokalizacji:\n${location.name}")
+        },
         text = {
             Column {
                 OutlinedTextField(
@@ -114,7 +193,7 @@ fun PlantSelectionDialog(
                 )
 
                 val filteredPlants = plants.filter {
-                    it.commonName.contains(searchQuery, ignoreCase = true)
+                    it.id?.contains(searchQuery, ignoreCase = true) ?: false
                 }
 
                 LazyColumn(
@@ -123,12 +202,17 @@ fun PlantSelectionDialog(
                         .heightIn(max = 300.dp)
                 ) {
                     items(filteredPlants) { plant ->
-                        ListItem(
-                            headlineContent = { Text(plant.commonName) },
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onPlantSelected(plant) }
-                        )
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = plant.id.orEmpty(),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                         HorizontalDivider()
                     }
                 }

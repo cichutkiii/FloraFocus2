@@ -42,94 +42,150 @@ import pl.preclaw.florafocus.data.repository.PlantPlacementEntity
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.LaunchedEffect
 
 
-@Composable
-fun PlantPlacementItem(
-    placement: PlantPlacementEntity,
-    allPlants: List<Plant>,
-    onDelete: () -> Unit
-) {
-    // Znajdź roślinę na podstawie ID
-    val plant = allPlants.find { it.id == placement.plantId }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = plant?.commonName ?: "Nieznana roślina",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                if (placement.variety.isNotBlank()) {
-                    Text(
-                        text = "Odmiana: ${placement.variety}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
-                Text(
-                    text = "Ilość: ${placement.quantity}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-
-                if (placement.plantingDate.isNotBlank()) {
-                    Text(
-                        text = "Data posadzenia: ${placement.plantingDate}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                if (placement.notes.isNotBlank()) {
-                    Text(
-                        text = "Notatki: ${placement.notes}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Usuń"
-                )
-            }
-        }
-    }
-}
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPlantToLocationDialog(
     plants: List<Plant>,
-    locationId: String, // Dodany parametr locationId
+    locationId: String,
     onDismiss: () -> Unit,
     onPlantSelected: (Plant, String, Int, String, String) -> Unit,
-    mainViewModel: MainViewModel // Dodany parameter mainViewModel
+    mainViewModel: MainViewModel
 ) {
     var selectedPlant by remember { mutableStateOf<Plant?>(null) }
     var variety by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("1") }
     var notes by remember { mutableStateOf("") }
     var plantingDate by remember { mutableStateOf("") }
-
     var showPlantSelector by remember { mutableStateOf(true) }
+
+    // Informacje debugowe
+    LaunchedEffect(Unit) {
+        println("AddPlantToLocationDialog: Dostępnych roślin: ${plants.size}")
+        plants.forEach { plant ->
+            println("  - Roślina: id=${plant.id}, commonName=${plant.commonName}")
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (showPlantSelector) "Wybierz roślinę" else "Dodaj szczegóły") },
         text = {
-            // Reszta kodu dialogu pozostaje bez zmian
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                if (showPlantSelector) {
+                    // Lista roślin do wyboru
+                    var searchQuery by remember { mutableStateOf("") }
+
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        label = { Text("Szukaj") },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
+
+                    // Filtruj rośliny na podstawie id (które jest nazwą rośliny w Firebase) lub commonName
+                    val filteredPlants = plants.filter {
+                        it.id?.contains(searchQuery, ignoreCase = true) == true ||
+                                it.commonName.contains(searchQuery, ignoreCase = true)
+                    }
+
+                    if (filteredPlants.isEmpty()) {
+                        Text("Brak pasujących roślin")
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                        ) {
+                            items(filteredPlants) { plant ->
+                                // Wybierz nazwę do wyświetlenia: commonName jeśli istnieje, w przeciwnym razie id
+                                val displayName = if (plant.commonName.isNotEmpty()) {
+                                    plant.commonName
+                                } else {
+                                    plant.id ?: "Nieznana roślina"
+                                }
+
+                                ListItem(
+                                    headlineContent = { Text(displayName) },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            selectedPlant = plant
+                                            showPlantSelector = false
+                                            println("Wybrano roślinę: id=${plant.id}, nazwa=$displayName")
+                                        }
+                                )
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                } else {
+                    // Formularz szczegółów
+                    selectedPlant?.let { plant ->
+                        // Wybierz nazwę do wyświetlenia
+                        val displayName = if (plant.commonName.isNotEmpty()) {
+                            plant.commonName
+                        } else {
+                            plant.id ?: "Nieznana roślina"
+                        }
+
+                        Text(
+                            text = "Wybrana roślina: $displayName",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
+
+                    OutlinedTextField(
+                        value = variety,
+                        onValueChange = { variety = it },
+                        label = { Text("Odmiana (opcjonalnie)") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = quantity,
+                        onValueChange = {
+                            if (it.isEmpty() || it.all { char -> char.isDigit() }) {
+                                quantity = it
+                            }
+                        },
+                        label = { Text("Ilość") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = plantingDate,
+                        onValueChange = { plantingDate = it },
+                        label = { Text("Data posadzenia (DD-MM-RRRR)") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = notes,
+                        onValueChange = { notes = it },
+                        label = { Text("Notatki (opcjonalnie)") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                }
+            }
         },
         confirmButton = {
             if (showPlantSelector) {
@@ -153,8 +209,11 @@ fun AddPlantToLocationDialog(
                         onClick = {
                             selectedPlant?.let { plant ->
                                 val quantityInt = quantity.toIntOrNull() ?: 1
-                                // Dodanie rośliny z powiązaniem do lokalizacji
+
+                                // Dodaj roślinę do kolekcji użytkownika z powiązaniem do lokalizacji
                                 mainViewModel.addUserPlantToLocation(plant, locationId)
+
+                                // Przekaż dane do wywołującego
                                 onPlantSelected(
                                     plant,
                                     variety,
@@ -172,7 +231,15 @@ fun AddPlantToLocationDialog(
             }
         },
         dismissButton = {
-            // Reszta kodu pozostaje bez zmian
+            if (showPlantSelector) {
+                // Nic tutaj, bo mamy tylko jeden przycisk w tym widoku
+            } else {
+                TextButton(
+                    onClick = { onDismiss() }
+                ) {
+                    Text("Anuluj")
+                }
+            }
         }
     )
 }

@@ -1,6 +1,7 @@
 package pl.preclaw.florafocus.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
@@ -14,6 +15,8 @@ import pl.preclaw.florafocus.data.repository.UserPlant
 import java.time.LocalDate
 import java.time.MonthDay
 import java.time.format.DateTimeFormatter
+
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getInstance(application).userPlantDao()
@@ -71,11 +74,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addUserPlant(plant: Plant) {
         viewModelScope.launch {
-            val name = if (plant.commonName.isNotEmpty()) {
-                plant.commonName
-            } else {
-                plant.id ?: "Nieznana roślina"
+            // Określ nazwę dla rośliny - albo commonName, albo id (które jest nazwą w Firebase)
+            val name = when {
+                plant.commonName.isNotEmpty() -> plant.commonName
+                plant.id != null -> plant.id
+                else -> "Nieznana roślina"
             }
+
+            println("Dodawanie rośliny do kolekcji użytkownika: $name")
 
             val userPlant = UserPlant(
                 name = name,
@@ -84,19 +90,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             dao.insert(userPlant)
         }
     }
+
     fun addUserPlantToLocation(plant: Plant, locationId: String) {
         viewModelScope.launch {
-            val name = if (plant.commonName.isNotEmpty()) {
-                plant.commonName
-            } else {
-                plant.id ?: "Nieznana roślina"
+            // Określ nazwę dla rośliny - albo commonName, albo id (które jest nazwą w Firebase)
+            val name = when {
+                plant.commonName.isNotEmpty() -> plant.commonName
+                plant.id != null -> plant.id
+                else -> "Nieznana roślina"
             }
+
+            println("Dodawanie rośliny do lokalizacji: nazwa=$name, lokalizacja=$locationId, id=${plant.id}")
 
             val userPlant = UserPlant(
                 name = name,
                 careSteps = plant.careSteps,
-                locationId = locationId // Dodanie powiązania z lokalizacją
+                locationId = locationId
             )
+
             dao.insert(userPlant)
         }
     }
@@ -104,6 +115,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Usuń roślinę z listy użytkownika
     fun removeUserPlant(plant: UserPlant) {
         viewModelScope.launch {
+            println("Usuwanie rośliny: ${plant.name}")
             dao.delete(plant)
         }
     }
@@ -112,6 +124,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun loadAllPlantsFromFirebase() {
         viewModelScope.launch {
             firebaseRepo.getAllPlants().collect { plants ->
+                // Logowanie każdej rośliny do celów debugowania
+                println("Pobrano ${plants.size} roślin z Firebase")
+                plants.forEach { plant ->
+                    println("Roślina: id=${plant.id}, nazwa=${plant.commonName}, kroków=${plant.careSteps.size}")
+
+                    // Jeśli commonName jest puste, ale id nie jest, ustawmy id jako commonName
+                    if (plant.commonName.isEmpty() && plant.id != null) {
+                        println("  -> Ustawiam id jako commonName dla ${plant.id}")
+                    }
+                }
+
+                // Aktualizuj listę roślin
                 _allPlants.value = plants
                 _plants.value = plants // Dla kompatybilności
             }
@@ -150,5 +174,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         } catch (e: Exception) {
             return false
         }
+    }
+
+    // Pobierz roślinę na podstawie jej ID
+    fun getPlantById(plantId: String): Plant? {
+        return _allPlants.value.find { it.id == plantId }
     }
 }
