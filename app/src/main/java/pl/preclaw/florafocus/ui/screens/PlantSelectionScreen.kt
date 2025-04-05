@@ -21,6 +21,23 @@ fun PlantSelectionScreen(
     onPlantSelected: (Plant) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var selectedPlant by remember { mutableStateOf<Plant?>(null) }
+    var showPlantDetails by remember { mutableStateOf(false) }
+
+    // Jeśli użytkownik wybierze roślinę, pokaż dialog szczegółów
+    if (showPlantDetails && selectedPlant != null) {
+        PlantDetailsDialog(
+            plant = selectedPlant!!,
+            onDismiss = { showPlantDetails = false },
+            onConfirm = { variety, quantity, notes, plantingDate ->
+                // Tutaj możemy dodać kod do przekazania szczegółów
+                // do głównego ViewModelu lub bezpośrednio do DAO
+                onPlantSelected(selectedPlant!!)
+                showPlantDetails = false
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -54,7 +71,10 @@ fun PlantSelectionScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable { onPlantSelected(plant) }
+                            .clickable {
+                                selectedPlant = plant
+                                showPlantDetails = true
+                            }
                     ) {
                         Row(
                             modifier = Modifier
@@ -66,7 +86,7 @@ fun PlantSelectionScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    text = plant.id.toString(),
+                                    text = plant.commonName.ifEmpty { plant.id.toString() },
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 Text(

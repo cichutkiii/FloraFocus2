@@ -26,5 +26,12 @@ data class UserPlant(
     val pests: List<String> = emptyList(),
     val diseases: List<String> = emptyList(),
     val companions: List<String> = emptyList(),
-    val incompatibles: List<String> = emptyList()
+    val incompatibles: List<String> = emptyList(),
+
+    // Nowe pola do przechowywania szczegółów konkretnego nasadzenia
+    val plantingDate: String = "", // Data posadzenia w formacie "dd-MM-yyyy"
+    val variety: String = "", // Odmiana rośliny
+    val quantity: Int = 1, // Ilość roślin
+    val notes: String = "", // Dodatkowe notatki
+    val customTasks: List<CareStep> = emptyList() // Niestandardowe zadania pielęgnacyjne
 )

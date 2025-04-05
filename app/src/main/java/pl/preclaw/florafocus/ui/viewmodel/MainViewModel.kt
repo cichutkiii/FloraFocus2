@@ -16,8 +16,6 @@ import java.time.LocalDate
 import java.time.MonthDay
 import java.time.format.DateTimeFormatter
 
-
-
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getInstance(application).userPlantDao()
     private val firebaseRepo = FirebasePlantRepository()
@@ -72,41 +70,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _upcomingTasks.value = tasks
     }
 
-    fun addUserPlant(plant: Plant) {
-        viewModelScope.launch {
-            // Określ nazwę dla rośliny - albo commonName, albo id (które jest nazwą w Firebase)
-            val name = when {
-                plant.commonName.isNotEmpty() -> plant.commonName
-                plant.id != null -> plant.id
-                else -> "Nieznana roślina"
-            }
-
-            println("Dodawanie rośliny do kolekcji użytkownika: $name")
-
-            val userPlant = UserPlant(
-                plantId = plant.id ?: "",  // Zapisz id jako plantId
-                name = name,
-                careSteps = plant.careSteps,
-                // Skopiuj pozostałe dane z obiektu Plant
-                edible = plant.edible,
-                growth = plant.growth,
-                waterRequirement = plant.waterRequirement,
-                lightRequirement = plant.lightRequirement,
-                usdaHardinessZone = plant.usdaHardinessZone,
-                soilType = plant.soilType,
-                family = plant.family,
-                edibleParts = plant.edibleParts,
-                sowingDate = plant.sowingDate,
-                pests = plant.pests,
-                diseases = plant.diseases,
-                companions = plant.companions,
-                incompatibles = plant.incompatibles
-            )
-            dao.insert(userPlant)
-        }
-    }
-
-    fun addUserPlantToLocation(plant: Plant, locationId: String) {
+    fun addUserPlantToLocation(
+        plant: Plant,
+        locationId: String,
+        variety: String = "",
+        quantity: Int = 1,
+        notes: String = "",
+        plantingDate: String = ""
+    ) {
         viewModelScope.launch {
             // Określ nazwę dla rośliny - albo commonName, albo id (które jest nazwą w Firebase)
             val name = when {
@@ -116,12 +87,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             println("Dodawanie rośliny do lokalizacji: nazwa=$name, lokalizacja=$locationId, id=${plant.id}")
+            println("Szczegóły: odmiana=$variety, ilość=$quantity, data=$plantingDate, notatki=$notes")
 
             val userPlant = UserPlant(
                 plantId = plant.id ?: "",  // Zapisz id jako plantId
                 name = name,
                 careSteps = plant.careSteps,
                 locationId = locationId,
+                // Nowe pola do przechowywania szczegółów nasadzenia
+                variety = variety,
+                quantity = quantity,
+                notes = notes,
+                plantingDate = plantingDate,
                 // Skopiuj pozostałe dane z obiektu Plant
                 edible = plant.edible,
                 growth = plant.growth,
@@ -142,6 +119,54 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             dao.addPlantToLocation(userPlant)
         }
     }
+
+    // Podobna aktualizacja dla metody addUserPlant (bez lokalizacji)
+    fun addUserPlant(
+        plant: Plant,
+        variety: String = "",
+        quantity: Int = 1,
+        notes: String = "",
+        plantingDate: String = ""
+    ) {
+        viewModelScope.launch {
+            // Określ nazwę dla rośliny - albo commonName, albo id (które jest nazwą w Firebase)
+            val name = when {
+                plant.commonName.isNotEmpty() -> plant.commonName
+                plant.id != null -> plant.id
+                else -> "Nieznana roślina"
+            }
+
+            println("Dodawanie rośliny do kolekcji użytkownika: $name")
+            println("Szczegóły: odmiana=$variety, ilość=$quantity, data=$plantingDate, notatki=$notes")
+
+            val userPlant = UserPlant(
+                plantId = plant.id ?: "",  // Zapisz id jako plantId
+                name = name,
+                careSteps = plant.careSteps,
+                // Nowe pola do przechowywania szczegółów nasadzenia
+                variety = variety,
+                quantity = quantity,
+                notes = notes,
+                plantingDate = plantingDate,
+                // Skopiuj pozostałe dane z obiektu Plant
+                edible = plant.edible,
+                growth = plant.growth,
+                waterRequirement = plant.waterRequirement,
+                lightRequirement = plant.lightRequirement,
+                usdaHardinessZone = plant.usdaHardinessZone,
+                soilType = plant.soilType,
+                family = plant.family,
+                edibleParts = plant.edibleParts,
+                sowingDate = plant.sowingDate,
+                pests = plant.pests,
+                diseases = plant.diseases,
+                companions = plant.companions,
+                incompatibles = plant.incompatibles
+            )
+            dao.insert(userPlant)
+        }
+    }
+
     // Usuń roślinę z listy użytkownika
     fun removeUserPlant(plant: UserPlant) {
         viewModelScope.launch {

@@ -12,7 +12,7 @@ import androidx.room.TypeConverters
     GardenAreaEntity::class,
     PlantLocationEntity::class,
     PlantPlacementEntity::class
-], version = 4)
+], version = 5)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userPlantDao(): UserPlantDao
@@ -27,7 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java, "flora-db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3,MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3,MIGRATION_3_4, MIGRATION_4_5)
                     .build().also { instance = it }
             }
         }
