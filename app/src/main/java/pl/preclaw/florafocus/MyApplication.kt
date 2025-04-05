@@ -11,6 +11,7 @@ import pl.preclaw.florafocus.data.repository.AppDatabase
 import pl.preclaw.florafocus.data.repository.FirebasePlantRepository
 import pl.preclaw.florafocus.data.repository.MIGRATION_1_2
 import pl.preclaw.florafocus.data.repository.MIGRATION_2_3
+import pl.preclaw.florafocus.data.repository.MIGRATION_3_4
 import pl.preclaw.florafocus.data.repository.UserPlant
 
 class MyApplication : Application() {
@@ -24,7 +25,7 @@ class MyApplication : Application() {
         database = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "flora-db"
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3,MIGRATION_3_4)
         // Dodanie migracji
 
             .build()

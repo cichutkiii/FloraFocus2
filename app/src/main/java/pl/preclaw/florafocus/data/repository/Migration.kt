@@ -71,3 +71,47 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         database.execSQL("ALTER TABLE userplant ADD COLUMN locationId TEXT NOT NULL DEFAULT ''")
     }
 }
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Migracja z wersji 3 do 4
+        // Najpierw tworzymy tymczasową tabelę z nową strukturą
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS userplant_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                plantId TEXT NOT NULL DEFAULT '',
+                name TEXT NOT NULL,
+                careSteps TEXT NOT NULL,
+                locationId TEXT NOT NULL DEFAULT '',
+                edible INTEGER NOT NULL DEFAULT 0,
+                growth TEXT NOT NULL DEFAULT '',
+                waterRequirement TEXT NOT NULL DEFAULT '',
+                lightRequirement TEXT NOT NULL DEFAULT '',
+                usdaHardinessZone TEXT NOT NULL DEFAULT '',
+                soilType TEXT NOT NULL DEFAULT '',
+                family TEXT NOT NULL DEFAULT '',
+                edibleParts TEXT NOT NULL DEFAULT '[]',
+                sowingDate TEXT NOT NULL DEFAULT '{"start":"","end":""}',
+                pests TEXT NOT NULL DEFAULT '[]',
+                diseases TEXT NOT NULL DEFAULT '[]',
+                companions TEXT NOT NULL DEFAULT '[]',
+                incompatibles TEXT NOT NULL DEFAULT '[]'
+            )
+            """
+        )
+
+        // Kopiujemy dane ze starej tabeli do nowej
+        database.execSQL(
+            """
+            INSERT INTO userplant_new (id, name, careSteps, locationId)
+            SELECT id, name, careSteps, locationId FROM userplant
+            """
+        )
+
+        // Usuwamy starą tabelę
+        database.execSQL("DROP TABLE userplant")
+
+        // Zmieniamy nazwę nowej tabeli na oryginalną
+        database.execSQL("ALTER TABLE userplant_new RENAME TO userplant")
+    }
+}

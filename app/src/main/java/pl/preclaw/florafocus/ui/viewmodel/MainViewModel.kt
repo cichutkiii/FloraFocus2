@@ -84,8 +84,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             println("Dodawanie rośliny do kolekcji użytkownika: $name")
 
             val userPlant = UserPlant(
+                plantId = plant.id ?: "",  // Zapisz id jako plantId
                 name = name,
-                careSteps = plant.careSteps
+                careSteps = plant.careSteps,
+                // Skopiuj pozostałe dane z obiektu Plant
+                edible = plant.edible,
+                growth = plant.growth,
+                waterRequirement = plant.waterRequirement,
+                lightRequirement = plant.lightRequirement,
+                usdaHardinessZone = plant.usdaHardinessZone,
+                soilType = plant.soilType,
+                family = plant.family,
+                edibleParts = plant.edibleParts,
+                sowingDate = plant.sowingDate,
+                pests = plant.pests,
+                diseases = plant.diseases,
+                companions = plant.companions,
+                incompatibles = plant.incompatibles
             )
             dao.insert(userPlant)
         }
@@ -103,15 +118,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             println("Dodawanie rośliny do lokalizacji: nazwa=$name, lokalizacja=$locationId, id=${plant.id}")
 
             val userPlant = UserPlant(
+                plantId = plant.id ?: "",  // Zapisz id jako plantId
                 name = name,
                 careSteps = plant.careSteps,
-                locationId = locationId
+                locationId = locationId,
+                // Skopiuj pozostałe dane z obiektu Plant
+                edible = plant.edible,
+                growth = plant.growth,
+                waterRequirement = plant.waterRequirement,
+                lightRequirement = plant.lightRequirement,
+                usdaHardinessZone = plant.usdaHardinessZone,
+                soilType = plant.soilType,
+                family = plant.family,
+                edibleParts = plant.edibleParts,
+                sowingDate = plant.sowingDate,
+                pests = plant.pests,
+                diseases = plant.diseases,
+                companions = plant.companions,
+                incompatibles = plant.incompatibles
             )
 
-            dao.insert(userPlant)
+            // Użyj nowej metody addPlantToLocation zamiast insert
+            dao.addPlantToLocation(userPlant)
         }
     }
-
     // Usuń roślinę z listy użytkownika
     fun removeUserPlant(plant: UserPlant) {
         viewModelScope.launch {

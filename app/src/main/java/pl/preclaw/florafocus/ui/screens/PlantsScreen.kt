@@ -1,6 +1,5 @@
 package pl.preclaw.florafocus.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.text.style.TextAlign
-
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
@@ -20,6 +18,8 @@ import pl.preclaw.florafocus.data.model.Plant
 import pl.preclaw.florafocus.data.repository.UserPlant
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import pl.preclaw.florafocus.data.repository.PlantLocationEntity
 import pl.preclaw.florafocus.data.repository.PlantPlacementEntity
 import pl.preclaw.florafocus.data.repository.SpaceWithAreas
@@ -36,7 +36,8 @@ fun PlantsScreen(
     val allPlants by viewModel.allPlants.collectAsState()
 
     var showPlantSelectionDialog by remember { mutableStateOf(false) }
-    var selectedLocation by remember { mutableStateOf<PlantLocationEntity?>(null) }
+    var selectedPlant by remember { mutableStateOf<Plant?>(null) }
+    var showLocationSelectionDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         floatingActionButton = {
@@ -60,7 +61,7 @@ fun PlantsScreen(
                         Text("Nie masz jeszcze żadnych roślin")
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            "Przejdź do zakładki 'Miejsca', aby dodać roślinę do konkretnej lokalizacji",
+                            "Dodaj pierwszą roślinę klikając przycisk + poniżej",
                             textAlign = TextAlign.Center
                         )
                     }
@@ -81,44 +82,57 @@ fun PlantsScreen(
             }
         }
 
-        // Dialog wyboru rośliny
-        if (selectedLocation != null) {
+        // Najpierw dialog wyboru rośliny
+        if (showPlantSelectionDialog) {
             PlantSelectionDialog(
                 plants = allPlants,
-                location = selectedLocation!!,
-                onDismiss = {
-                    selectedLocation = null
+                onDismiss = { showPlantSelectionDialog = false },
+                onPlantSelected = { plant ->
+                    selectedPlant = plant
                     showPlantSelectionDialog = false
-                },
-                onPlantSelected = { selectedPlant ->
-                    // Dodaj roślinę do konkretnej lokalizacji
-                    viewModel.addUserPlantToLocation(selectedPlant, selectedLocation!!.id)
-
-                    // Dodaj wpis do PlantPlacement
-                    gardenViewModel.addPlantPlacement(
-                        PlantPlacementEntity(
-                            plantId = selectedPlant.id ?: "",
-                            locationId = selectedLocation!!.id
-                        )
-                    )
-
-                    selectedLocation = null
-                    showPlantSelectionDialog = false
+                    showLocationSelectionDialog = true  // Po wybraniu rośliny, pokaż dialog lokalizacji
                 }
             )
-        } else if (showPlantSelectionDialog) {
-            // Dialog wyboru lokalizacji
+        }
+
+        // Po wybraniu rośliny, pokaż dialog wyboru lokalizacji
+        if (showLocationSelectionDialog && selectedPlant != null) {
             LocationSelectionDialog(
                 spaces = allSpaces,
                 onLocationSelected = { location ->
-                    selectedLocation = location
+                    // Dodaj roślinę do lokalizacji
+                    addPlantToLocation(selectedPlant!!, location, gardenViewModel, viewModel)
+                    showLocationSelectionDialog = false
+                    selectedPlant = null
                 },
-                onDismiss = { showPlantSelectionDialog = false }
+                onDismiss = {
+                    showLocationSelectionDialog = false
+                    selectedPlant = null
+                }
             )
         }
     }
 }
 
+fun addPlantToLocation(
+    plant: Plant,
+    location: PlantLocationEntity,
+    gardenViewModel: GardenViewModel,
+    mainViewModel: MainViewModel
+) {
+    // WAŻNE: Wywołaj tylko raz dodawanie rośliny
+    // Dodaj roślinę do kolekcji użytkownika
+    mainViewModel.addUserPlantToLocation(plant, location.id)
+
+    // Dodaj powiązanie rośliny z lokalizacją
+    gardenViewModel.addPlantPlacement(
+        PlantPlacementEntity(
+            plantId = plant.id ?: "",
+            locationId = location.id,
+            quantity = 1
+        )
+    )
+}
 
 @Composable
 fun LocationSelectionDialog(
@@ -166,12 +180,10 @@ fun LocationSelectionDialog(
     )
 }
 
-// Dodaj nowy composable dla dialogu wyboru rośliny
 
 @Composable
 fun PlantSelectionDialog(
     plants: List<Plant>,
-    location: PlantLocationEntity,
     onDismiss: () -> Unit,
     onPlantSelected: (Plant) -> Unit
 ) {
@@ -179,9 +191,7 @@ fun PlantSelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text("Wybierz roślinę dla lokalizacji:\n${location.name}")
-        },
+        title = { Text("Wybierz roślinę") },
         text = {
             Column {
                 OutlinedTextField(
@@ -193,7 +203,8 @@ fun PlantSelectionDialog(
                 )
 
                 val filteredPlants = plants.filter {
-                    it.id?.contains(searchQuery, ignoreCase = true) ?: false
+                    val displayName = if (it.commonName.isNotEmpty()) it.commonName else it.id ?: ""
+                    displayName.contains(searchQuery, ignoreCase = true)
                 }
 
                 LazyColumn(
@@ -202,6 +213,12 @@ fun PlantSelectionDialog(
                         .heightIn(max = 300.dp)
                 ) {
                     items(filteredPlants) { plant ->
+                        val displayName = if (plant.commonName.isNotEmpty()) {
+                            plant.commonName
+                        } else {
+                            plant.id ?: "Nieznana roślina"
+                        }
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -209,7 +226,7 @@ fun PlantSelectionDialog(
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = plant.id.orEmpty(),
+                                text = displayName,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
@@ -225,8 +242,11 @@ fun PlantSelectionDialog(
         }
     )
 }
+
 // Funkcja pomocnicza do pobrania nazwy lokalizacji
 private fun getLocationName(locationId: String, spaces: List<SpaceWithAreas>): String {
+    if (locationId.isEmpty()) return "Brak lokalizacji"
+
     spaces.forEach { space ->
         space.areas.forEach { area ->
             area.locations.forEach { location ->
@@ -243,8 +263,11 @@ private fun getLocationName(locationId: String, spaces: List<SpaceWithAreas>): S
 fun UserPlantItem(
     plant: UserPlant,
     locationName: String,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
+    gardenViewModel: GardenViewModel = viewModel() // Dodajemy dostęp do GardenViewModel
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -272,7 +295,35 @@ fun UserPlantItem(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            IconButton(onClick = onRemove) {
+            IconButton(onClick = {
+                coroutineScope.launch {
+                    // Jeśli roślina ma przypisaną lokalizację, znajdź i usuń również powiązanie
+                    if (plant.locationId.isNotEmpty()) {
+                        // Pobierz wszystkie placements dla danej lokalizacji
+                        val placements = gardenViewModel.getPlacementsForLocation(plant.locationId).first()
+
+                        // Znajdź placement, który odpowiada tej roślinie
+                        // Uwaga: Tutaj dopasowujemy po nazwie, bo plant.name odpowiada plant.id w Firebase
+                        val placementToDelete = placements.find { placement ->
+                            // Sprawdz czy ID rośliny z placement pasuje do nazwy rośliny
+                            // Można dostosować tę logikę w zależności od tego, jak dokładnie
+                            // są mapowane ID roślin
+                            placement.plantId == plant.name ||
+                                    placement.plantId.contains(plant.name, ignoreCase = true) ||
+                                    plant.name.contains(placement.plantId, ignoreCase = true)
+                        }
+
+                        // Jeśli znaleziono powiązanie, usuń je
+                        placementToDelete?.let {
+                            gardenViewModel.deletePlantPlacement(it)
+                            println("Usunięto powiązanie rośliny ${plant.name} z lokalizacją ${plant.locationId}")
+                        }
+                    }
+
+                    // Na koniec usuń roślinę z listy użytkownika
+                    onRemove()
+                }
+            }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Usuń"
