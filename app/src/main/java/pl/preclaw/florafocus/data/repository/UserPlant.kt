@@ -27,6 +27,8 @@ data class UserPlant(
     val diseases: List<String> = emptyList(),
     val companions: List<String> = emptyList(),
     val incompatibles: List<String> = emptyList(),
+    val weatherDependencies: Map<String, pl.preclaw.florafocus.data.model.TemperatureRange> = emptyMap(),
+    val growthPhaseTriggers: Map<String, String> = emptyMap(),
 
     // Nowe pola do przechowywania szczegółów konkretnego nasadzenia
     val plantingDate: String = "", // Data posadzenia w formacie "dd-MM-yyyy"

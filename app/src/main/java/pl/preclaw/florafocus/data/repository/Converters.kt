@@ -8,6 +8,7 @@ import pl.preclaw.florafocus.data.model.DateRange
 import pl.preclaw.florafocus.data.model.LightCondition
 import pl.preclaw.florafocus.data.model.LocationType
 import pl.preclaw.florafocus.data.model.SoilType
+import pl.preclaw.florafocus.data.model.TemperatureRange
 
 class Converters {
     private val gson = Gson()
@@ -107,5 +108,48 @@ class Converters {
     @TypeConverter
     fun toBoolean(value: Int): Boolean {
         return value != 0
+    }
+
+    // NOWE KONWERTERY
+
+    // Konwerter dla Map<String, String> (growthPhaseTriggers)
+    @TypeConverter
+    fun fromStringStringMap(value: Map<String, String>): String {
+        val type = object : TypeToken<Map<String, String>>() {}.type
+        return gson.toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toStringStringMap(value: String): Map<String, String> {
+        val type = object : TypeToken<Map<String, String>>() {}.type
+        return gson.fromJson(value, type) ?: emptyMap()
+    }
+
+    // Konwerter dla TemperatureRange
+    @TypeConverter
+    fun fromTemperatureRange(value: TemperatureRange): String {
+        return gson.toJson(value)
+    }
+
+    @TypeConverter
+    fun toTemperatureRange(value: String): TemperatureRange {
+        return try {
+            gson.fromJson(value, TemperatureRange::class.java)
+        } catch (e: Exception) {
+            TemperatureRange()
+        }
+    }
+
+    // Konwerter dla Map<String, TemperatureRange> (weatherDependencies)
+    @TypeConverter
+    fun fromTemperatureRangeMap(value: Map<String, TemperatureRange>): String {
+        val type = object : TypeToken<Map<String, TemperatureRange>>() {}.type
+        return gson.toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toTemperatureRangeMap(value: String): Map<String, TemperatureRange> {
+        val type = object : TypeToken<Map<String, TemperatureRange>>() {}.type
+        return gson.fromJson(value, type) ?: emptyMap()
     }
 }

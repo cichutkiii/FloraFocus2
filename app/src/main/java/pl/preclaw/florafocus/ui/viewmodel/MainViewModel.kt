@@ -38,6 +38,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
         loadAllPlantsFromFirebase()
         observeUserPlants()
+        viewModelScope.launch {
+            // Odczekaj chwilę aż dane się załadują
+            kotlinx.coroutines.delay(2000)
+            debugPlants()
+        }
     }
 
     // Obserwuj zmiany w liście roślin użytkownika i aktualizuj zadania
@@ -70,6 +75,56 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _upcomingTasks.value = tasks
     }
 
+    // W klasie MainViewModel.kt, zaktualizuj metodę addUserPlant
+    fun addUserPlant(
+        plant: Plant,
+        variety: String = "",
+        quantity: Int = 1,
+        notes: String = "",
+        plantingDate: String = ""
+    ) {
+        viewModelScope.launch {
+            // Określ nazwę dla rośliny - albo commonName, albo id (które jest nazwą w Firebase)
+            val name = when {
+                plant.commonName.isNotEmpty() -> plant.commonName
+                plant.id != null -> plant.id
+                else -> "Nieznana roślina"
+            }
+
+            println("Dodawanie rośliny do kolekcji użytkownika: $name")
+            println("Szczegóły: odmiana=$variety, ilość=$quantity, data=$plantingDate, notatki=$notes")
+
+            val userPlant = UserPlant(
+                plantId = plant.id ?: "",  // Zapisz id jako plantId
+                name = name,
+                careSteps = plant.careSteps,
+                // Nowe pola do przechowywania szczegółów nasadzenia
+                variety = variety,
+                quantity = quantity,
+                notes = notes,
+                plantingDate = plantingDate,
+                // Skopiuj pozostałe dane z obiektu Plant
+                edible = plant.edible,
+                growth = plant.growth,
+                waterRequirement = plant.waterRequirement,
+                lightRequirement = plant.lightRequirement,
+                usdaHardinessZone = plant.usdaHardinessZone,
+                soilType = plant.soilType,
+                family = plant.family,
+                edibleParts = plant.edibleParts,
+                sowingDate = plant.sowingDate,
+                pests = plant.pests,
+                diseases = plant.diseases,
+                companions = plant.companions,
+                incompatibles = plant.incompatibles,
+                weatherDependencies = plant.weatherDependencies,
+                growthPhaseTriggers = plant.growthPhaseTriggers
+            )
+            dao.insert(userPlant)
+        }
+    }
+
+    // Analogicznie zaktualizuj metodę addUserPlantToLocation
     fun addUserPlantToLocation(
         plant: Plant,
         locationId: String,
@@ -112,58 +167,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 pests = plant.pests,
                 diseases = plant.diseases,
                 companions = plant.companions,
-                incompatibles = plant.incompatibles
+                incompatibles = plant.incompatibles,
+                weatherDependencies = plant.weatherDependencies,
+                growthPhaseTriggers = plant.growthPhaseTriggers
             )
 
             // Użyj nowej metody addPlantToLocation zamiast insert
             dao.addPlantToLocation(userPlant)
-        }
-    }
-
-    // Podobna aktualizacja dla metody addUserPlant (bez lokalizacji)
-    fun addUserPlant(
-        plant: Plant,
-        variety: String = "",
-        quantity: Int = 1,
-        notes: String = "",
-        plantingDate: String = ""
-    ) {
-        viewModelScope.launch {
-            // Określ nazwę dla rośliny - albo commonName, albo id (które jest nazwą w Firebase)
-            val name = when {
-                plant.commonName.isNotEmpty() -> plant.commonName
-                plant.id != null -> plant.id
-                else -> "Nieznana roślina"
-            }
-
-            println("Dodawanie rośliny do kolekcji użytkownika: $name")
-            println("Szczegóły: odmiana=$variety, ilość=$quantity, data=$plantingDate, notatki=$notes")
-
-            val userPlant = UserPlant(
-                plantId = plant.id ?: "",  // Zapisz id jako plantId
-                name = name,
-                careSteps = plant.careSteps,
-                // Nowe pola do przechowywania szczegółów nasadzenia
-                variety = variety,
-                quantity = quantity,
-                notes = notes,
-                plantingDate = plantingDate,
-                // Skopiuj pozostałe dane z obiektu Plant
-                edible = plant.edible,
-                growth = plant.growth,
-                waterRequirement = plant.waterRequirement,
-                lightRequirement = plant.lightRequirement,
-                usdaHardinessZone = plant.usdaHardinessZone,
-                soilType = plant.soilType,
-                family = plant.family,
-                edibleParts = plant.edibleParts,
-                sowingDate = plant.sowingDate,
-                pests = plant.pests,
-                diseases = plant.diseases,
-                companions = plant.companions,
-                incompatibles = plant.incompatibles
-            )
-            dao.insert(userPlant)
         }
     }
 
@@ -197,16 +207,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Sprawdź czy zadanie jest w nadchodzącym okresie
     private fun isTaskUpcoming(dateRange: DateRange, currentDate: LocalDate): Boolean {
         if (dateRange.start.isEmpty() || dateRange.end.isEmpty()) {
             return false
         }
 
-        val formatter = DateTimeFormatter.ofPattern("dd-MM")
-
         try {
             // Parsuj daty jako MonthDay
+            val formatter = DateTimeFormatter.ofPattern("dd-MM")
+
+            // Uzyskaj MonthDay z ciągów znaków w formacie "dd-MM"
             val startMonthDay = MonthDay.parse(dateRange.start, formatter)
             val endMonthDay = MonthDay.parse(dateRange.end, formatter)
 
@@ -227,6 +237,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         currentMonthDay.equals(endMonthDay)
             }
         } catch (e: Exception) {
+            println("Błąd parsowania daty: ${e.message}, start=${dateRange.start}, end=${dateRange.end}")
             return false
         }
     }
@@ -235,4 +246,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getPlantById(plantId: String): Plant? {
         return _allPlants.value.find { it.id == plantId }
     }
+    fun debugPlants() {
+        viewModelScope.launch {
+            // Debug istniejących roślin użytkownika
+            userPlants.collect { plants ->
+                println("DEBUG - Rośliny użytkownika (${plants.size}):")
+                plants.forEach { plant ->
+                    println("Roślina: ${plant.name}")
+                    println("  Jadalna: ${plant.edible}")
+                    println("  Water Req: ${plant.waterRequirement}")
+                    println("  Light Req: ${plant.lightRequirement}")
+                    println("  Soil Type: ${plant.soilType}")
+                }
+            }
+
+            // Debug roślin z Firebase
+            _allPlants.value.forEach { plant ->
+                println("DEBUG Firebase - Roślina: ${plant.commonName} (${plant.id})")
+                println("  Jadalna: ${plant.edible}")
+                println("  Water Req: ${plant.waterRequirement}")
+                println("  Light Req: ${plant.lightRequirement}")
+                println("  Soil Type: ${plant.soilType}")
+            }
+        }
+    }
+
 }

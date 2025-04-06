@@ -4,37 +4,68 @@ import com.google.firebase.database.PropertyName
 
 data class Plant(
     val id: String? = null,
-    @get:PropertyName("commonName") val commonName: String = "",
-    @get:PropertyName("careSteps") val careSteps: List<CareStep> = emptyList(),
-    val edible: Boolean = false,
-    val growth: String = "",
-    val waterRequirement: String = "",
-    val lightRequirement: String = "",
-    val usdaHardinessZone: String = "",
-    val soilType: String = "",
-    val family: String = "",
-    val edibleParts: List<String> = emptyList(),
-    val sowingDate: DateRange = DateRange(),
-    val pests: List<String> = emptyList(),
-    val diseases: List<String> = emptyList(),
-    val companions: List<String> = emptyList(),
-    val incompatibles: List<String> = emptyList(),
-    val weatherDependencies: Map<String, TemperatureRange> = emptyMap(),
-    val growthPhaseTriggers: Map<String, String> = emptyMap()
+
+    @get:PropertyName("commonName")
+    @set:PropertyName("commonName")
+    var commonName: String = "",
+
+    @get:PropertyName("careSteps")
+    @set:PropertyName("careSteps")
+    var careSteps: List<CareStep> = emptyList(),
+
+    @get:PropertyName("Edible")
+    @set:PropertyName("Edible")
+    var edible: Boolean = false,
+
+    @get:PropertyName("Growth")
+    @set:PropertyName("Growth")
+    var growth: String = "",
+
+    @get:PropertyName("Water requirement")
+    @set:PropertyName("Water requirement")
+    var waterRequirement: String = "",
+
+    @get:PropertyName("Light requirement")
+    @set:PropertyName("Light requirement")
+    var lightRequirement: String = "",
+
+    @get:PropertyName("USDA Hardiness zone")
+    @set:PropertyName("USDA Hardiness zone")
+    var usdaHardinessZone: String = "",
+
+    @get:PropertyName("Soil type")
+    @set:PropertyName("Soil type")
+    var soilType: String = "",
+
+    @get:PropertyName("Family")
+    @set:PropertyName("Family")
+    var family: String = "",
+
+    @get:PropertyName("Edible parts")
+    @set:PropertyName("Edible parts")
+    var edibleParts: List<String> = emptyList(),
+
+    var sowingDate: DateRange = DateRange(),
+    var pests: List<String> = emptyList(),
+    var diseases: List<String> = emptyList(),
+    var companions: List<String> = emptyList(),
+    var incompatibles: List<String> = emptyList(),
+    var weatherDependencies: Map<String, TemperatureRange> = emptyMap(),
+    var growthPhaseTriggers: Map<String, String> = emptyMap()
 ) {
     // Konstruktor bezargumentowy wymagany przez Firebase
     constructor() : this(null)
 
     fun toMap(): Map<String, Any?> = mapOf(
         "commonName" to commonName,
-        "edible" to edible,
-        "growth" to growth,
-        "waterRequirement" to waterRequirement,
-        "lightRequirement" to lightRequirement,
-        "usdaHardinessZone" to usdaHardinessZone,
-        "soilType" to soilType,
-        "family" to family,
-        "edibleParts" to edibleParts,
+        "Edible" to edible,
+        "Growth" to growth,
+        "Water requirement" to waterRequirement,
+        "Light requirement" to lightRequirement,
+        "USDA Hardiness zone" to usdaHardinessZone,
+        "Soil type" to soilType,
+        "Family" to family,
+        "Edible parts" to edibleParts,
         "careSteps" to careSteps.map { it.toMap() },
         "sowingDate" to sowingDate.toMap(),
         "pests" to pests,

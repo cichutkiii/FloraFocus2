@@ -174,3 +174,67 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         database.execSQL("ALTER TABLE userplant_new RENAME TO userplant")
     }
 }
+// W pliku Migration.kt dodaj nową migrację
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Tworzymy tymczasową tabelę z nową strukturą
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS userplant_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                plantId TEXT NOT NULL DEFAULT '',
+                name TEXT NOT NULL,
+                careSteps TEXT NOT NULL,
+                locationId TEXT NOT NULL DEFAULT '',
+                edible INTEGER NOT NULL DEFAULT 0,
+                growth TEXT NOT NULL DEFAULT '',
+                waterRequirement TEXT NOT NULL DEFAULT '',
+                lightRequirement TEXT NOT NULL DEFAULT '',
+                usdaHardinessZone TEXT NOT NULL DEFAULT '',
+                soilType TEXT NOT NULL DEFAULT '',
+                family TEXT NOT NULL DEFAULT '',
+                edibleParts TEXT NOT NULL DEFAULT '[]',
+                sowingDate TEXT NOT NULL DEFAULT '{"start":"","end":""}',
+                pests TEXT NOT NULL DEFAULT '[]',
+                diseases TEXT NOT NULL DEFAULT '[]',
+                companions TEXT NOT NULL DEFAULT '[]',
+                incompatibles TEXT NOT NULL DEFAULT '[]',
+                weatherDependencies TEXT NOT NULL DEFAULT '{}',
+                growthPhaseTriggers TEXT NOT NULL DEFAULT '{}',
+                plantingDate TEXT NOT NULL DEFAULT '',
+                variety TEXT NOT NULL DEFAULT '',
+                quantity INTEGER NOT NULL DEFAULT 1,
+                notes TEXT NOT NULL DEFAULT '',
+                customTasks TEXT NOT NULL DEFAULT '[]'
+            )
+            """
+        )
+
+        // Kopiujemy dane ze starej tabeli do nowej
+        database.execSQL(
+            """
+            INSERT INTO userplant_new (
+                id, plantId, name, careSteps, locationId, 
+                edible, growth, waterRequirement, lightRequirement, usdaHardinessZone, 
+                soilType, family, edibleParts, sowingDate, pests, 
+                diseases, companions, incompatibles, plantingDate, variety,
+                quantity, notes, customTasks
+            )
+            SELECT 
+                id, plantId, name, careSteps, locationId, 
+                edible, growth, waterRequirement, lightRequirement, usdaHardinessZone, 
+                soilType, family, edibleParts, sowingDate, pests, 
+                diseases, companions, incompatibles, plantingDate, variety,
+                quantity, notes, customTasks
+            FROM userplant
+            """
+        )
+
+        // Usuwamy starą tabelę
+        database.execSQL("DROP TABLE userplant")
+
+        // Zmieniamy nazwę nowej tabeli na oryginalną
+        database.execSQL("ALTER TABLE userplant_new RENAME TO userplant")
+    }
+}
