@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import pl.preclaw.florafocus.data.repository.UserPlant
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantDetailsScreen(
     userPlantId: Int,
@@ -32,234 +31,200 @@ fun PlantDetailsScreen(
         allPlants.find { plant -> plant.id == userPlant.plantId }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(userPlant?.name ?: "Szczegóły rośliny") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Powrót")
+    // Usuwamy Scaffold i TopAppBar - będą obsługiwane przez rodzica
+    if (userPlant == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Nie znaleziono rośliny")
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Podstawowe informacje
+            PlantInfoSection(
+                title = "Informacje podstawowe",
+                content = {
+                    InfoItem(
+                        icon = Icons.Default.Eco,
+                        label = "Nazwa",
+                        value = userPlant.name
+                    )
+                    if (userPlant.family.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.Category,
+                            label = "Rodzina",
+                            value = userPlant.family
+                        )
+                    }
+                    if (userPlant.growth.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.Timeline,
+                            label = "Cykl życia",
+                            value = userPlant.growth
+                        )
+                    }
+                    InfoItem(
+                        icon = Icons.Default.Restaurant,
+                        label = "Jadalna",
+                        value = if (userPlant.edible) "Tak" else "Nie"
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Wymagania uprawowe
+            PlantInfoSection(
+                title = "Wymagania uprawowe",
+                content = {
+                    if (userPlant.waterRequirement.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.WaterDrop,
+                            label = "Zapotrzebowanie na wodę",
+                            value = userPlant.waterRequirement
+                        )
+                    }
+                    if (userPlant.lightRequirement.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.WbSunny,
+                            label = "Zapotrzebowanie na światło",
+                            value = userPlant.lightRequirement
+                        )
+                    }
+                    if (userPlant.soilType.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.Landscape,
+                            label = "Typ gleby",
+                            value = userPlant.soilType
+                        )
+                    }
+                    if (userPlant.usdaHardinessZone.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.PublishedWithChanges,
+                            label = "Strefa USDA",
+                            value = userPlant.usdaHardinessZone
+                        )
                     }
                 }
-                // Bez przycisku edycji
             )
-        }
-    ) { paddingValues ->
-        if (userPlant == null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Nie znaleziono rośliny")
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                // Podstawowe informacje
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Harmonogram uprawy
+            if (userPlant.sowingDate.start.isNotBlank() || userPlant.careSteps.isNotEmpty()) {
                 PlantInfoSection(
-                    title = "Informacje podstawowe",
+                    title = "Harmonogram uprawy",
                     content = {
-                        InfoItem(
-                            icon = Icons.Default.Eco,
-                            label = "Nazwa",
-                            value = userPlant.name
-                        )
-                        if (userPlant.family.isNotBlank()) {
+                        if (userPlant.sowingDate.start.isNotBlank()) {
                             InfoItem(
-                                icon = Icons.Default.Category,
-                                label = "Rodzina",
-                                value = userPlant.family
+                                icon = Icons.Default.CalendarMonth,
+                                label = "Termin siewu",
+                                value = "${userPlant.sowingDate.start} - ${userPlant.sowingDate.end}"
                             )
                         }
-                        if (userPlant.growth.isNotBlank()) {
-                            InfoItem(
-                                icon = Icons.Default.Timeline,
-                                label = "Cykl życia",
-                                value = userPlant.growth
-                            )
-                        }
-                        InfoItem(
-                            icon = Icons.Default.Restaurant,
-                            label = "Jadalna",
-                            value = if (userPlant.edible) "Tak" else "Nie"
-                        )
-                    }
-                )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Wymagania uprawowe
-                PlantInfoSection(
-                    title = "Wymagania uprawowe",
-                    content = {
-                        if (userPlant.waterRequirement.isNotBlank()) {
-                            InfoItem(
-                                icon = Icons.Default.WaterDrop,
-                                label = "Zapotrzebowanie na wodę",
-                                value = userPlant.waterRequirement
+                        // Kroki pielęgnacyjne
+                        if (userPlant.careSteps.isNotEmpty()) {
+                            Text(
+                                "Kroki pielęgnacyjne",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                             )
-                        }
-                        if (userPlant.lightRequirement.isNotBlank()) {
-                            InfoItem(
-                                icon = Icons.Default.WbSunny,
-                                label = "Zapotrzebowanie na światło",
-                                value = userPlant.lightRequirement
-                            )
-                        }
-                        if (userPlant.soilType.isNotBlank()) {
-                            InfoItem(
-                                icon = Icons.Default.Landscape,
-                                label = "Typ gleby",
-                                value = userPlant.soilType
-                            )
-                        }
-                        if (userPlant.usdaHardinessZone.isNotBlank()) {
-                            InfoItem(
-                                icon = Icons.Default.PublishedWithChanges,
-                                label = "Strefa USDA",
-                                value = userPlant.usdaHardinessZone
-                            )
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Harmonogram uprawy
-                if (userPlant.sowingDate.start.isNotBlank() || userPlant.careSteps.isNotEmpty()) {
-                    PlantInfoSection(
-                        title = "Harmonogram uprawy",
-                        content = {
-                            if (userPlant.sowingDate.start.isNotBlank()) {
-                                InfoItem(
-                                    icon = Icons.Default.CalendarMonth,
-                                    label = "Termin siewu",
-                                    value = "${userPlant.sowingDate.start} - ${userPlant.sowingDate.end}"
-                                )
-                            }
-
-                            // Kroki pielęgnacyjne
-                            if (userPlant.careSteps.isNotEmpty()) {
-                                Text(
-                                    "Kroki pielęgnacyjne",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                                )
-                                userPlant.careSteps.forEach { step ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            Icons.Default.CheckCircle,
-                                            contentDescription = null,
-                                            modifier = Modifier.padding(end = 8.dp),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                        Column {
-                                            Text(step.task)
-                                            if (step.dateRange.start.isNotBlank()) {
-                                                Text(
-                                                    "Termin: ${step.dateRange.start} - ${step.dateRange.end}",
-                                                    style = MaterialTheme.typography.bodySmall,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                )
-                                            }
+                            userPlant.careSteps.forEach { step ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.CheckCircle,
+                                        contentDescription = null,
+                                        modifier = Modifier.padding(end = 8.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                    Column {
+                                        Text(step.task)
+                                        if (step.dateRange.start.isNotBlank()) {
+                                            Text(
+                                                "Termin: ${step.dateRange.start} - ${step.dateRange.end}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
                                         }
                                     }
                                 }
                             }
                         }
-                    )
+                    }
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
-                // Porady uprawowe
-                if (userPlant.companions.isNotEmpty() || userPlant.incompatibles.isNotEmpty() ||
-                    userPlant.pests.isNotEmpty() || userPlant.diseases.isNotEmpty()) {
-                    PlantInfoSection(
-                        title = "Porady uprawowe",
-                        content = {
-                            // Rośliny towarzyszące
-                            if (userPlant.companions.isNotEmpty()) {
-                                ChipSection(
-                                    title = "Dobre sąsiedztwo",
-                                    items = userPlant.companions
-                                )
-                            }
-
-                            // Rośliny niekompatybilne
-                            if (userPlant.incompatibles.isNotEmpty()) {
-                                ChipSection(
-                                    title = "Złe sąsiedztwo",
-                                    items = userPlant.incompatibles
-                                )
-                            }
-
-                            // Szkodniki
-                            if (userPlant.pests.isNotEmpty()) {
-                                ChipSection(
-                                    title = "Typowe szkodniki",
-                                    items = userPlant.pests
-                                )
-                            }
-
-                            // Choroby
-                            if (userPlant.diseases.isNotEmpty()) {
-                                ChipSection(
-                                    title = "Typowe choroby",
-                                    items = userPlant.diseases
-                                )
-                            }
-                        }
-                    )
-                }
-
-                // Części jadalne
-                if (userPlant.edible && userPlant.edibleParts.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    PlantInfoSection(
-                        title = "Części jadalne",
-                        content = {
+            // Porady uprawowe
+            if (userPlant.companions.isNotEmpty() || userPlant.incompatibles.isNotEmpty() ||
+                userPlant.pests.isNotEmpty() || userPlant.diseases.isNotEmpty()) {
+                PlantInfoSection(
+                    title = "Porady uprawowe",
+                    content = {
+                        // Rośliny towarzyszące
+                        if (userPlant.companions.isNotEmpty()) {
                             ChipSection(
-                                title = "",
-                                items = userPlant.edibleParts
+                                title = "Dobre sąsiedztwo",
+                                items = userPlant.companions
                             )
                         }
-                    )
-                }
 
-                // Dodajemy informacje o fazach wzrostu, jeśli są dostępne
-                if (userPlant.growthPhaseTriggers != null && !userPlant.growthPhaseTriggers.isEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    PlantInfoSection(
-                        title = "Fazy wzrostu",
-                        content = {
-                            userPlant.growthPhaseTriggers.forEach { (days, phase) ->
-                                InfoItem(
-                                    icon = Icons.Default.Timer,
-                                    label = "Dzień $days",
-                                    value = phase
-                                )
-                            }
+                        // Rośliny niekompatybilne
+                        if (userPlant.incompatibles.isNotEmpty()) {
+                            ChipSection(
+                                title = "Złe sąsiedztwo",
+                                items = userPlant.incompatibles
+                            )
                         }
-                    )
-                }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                        // Szkodniki
+                        if (userPlant.pests.isNotEmpty()) {
+                            ChipSection(
+                                title = "Typowe szkodniki",
+                                items = userPlant.pests
+                            )
+                        }
+
+                        // Choroby
+                        if (userPlant.diseases.isNotEmpty()) {
+                            ChipSection(
+                                title = "Typowe choroby",
+                                items = userPlant.diseases
+                            )
+                        }
+                    }
+                )
             }
+
+            // Części jadalne
+            if (userPlant.edible && userPlant.edibleParts.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PlantInfoSection(
+                    title = "Części jadalne",
+                    content = {
+                        ChipSection(
+                            title = "",
+                            items = userPlant.edibleParts
+                        )
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

@@ -21,9 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pl.preclaw.florafocus.data.model.Plant
 import pl.preclaw.florafocus.data.repository.PlantLocationEntity
@@ -40,7 +38,9 @@ import java.time.format.DateTimeFormatter
 fun LocationDetailsContent(
     location: PlantLocationEntity,
     gardenViewModel: GardenViewModel,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    onNavigateToPlantDetails: (Int) -> Unit  // Nowy parametr
+
 ) {
     val plants by mainViewModel.allPlants.collectAsState()
     val userPlants by mainViewModel.userPlants.collectAsState(initial = emptyList())
@@ -50,163 +50,170 @@ fun LocationDetailsContent(
     var showAddPlantDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Zawartość ekranu
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Karta informacyjna lokalizacji
-        Card(
+
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = location.name,
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                if (location.description.isNotBlank()) {
-                    Text(
-                        text = location.description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
-
-                // Informacje o warunkach
-                Row(
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    if (location.lightConditions.isNotBlank()) {
-                        LocationChip(
-                            text = location.lightConditions,
-                            icon = Icons.Default.WbSunny
-                        )
-                    }
-                    if (location.soilType.isNotBlank()) {
-                        LocationChip(
-                            text = location.soilType,
-                            icon = Icons.Default.Grass
-                        )
-                    }
-                }
-
-                if (location.notes.isNotBlank()) {
-                    Text(
-                        text = "Notatki: ${location.notes}",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
-        }
-
-        // Lista roślin
-        Text(
-            text = "Rośliny w tej lokalizacji",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-
-        if (placements.isEmpty()) {
-            Box(
+            // Karta informacyjna lokalizacji
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
-                contentAlignment = Alignment.Center
+                    .padding(bottom = 16.dp)
             ) {
-                Text("Brak roślin w tej lokalizacji")
-            }
-        } else {
-            LazyColumn {
-                items(placements) { placement ->
-                    PlantPlacementItem(
-                        placement = placement,
-                        allPlants = plants,
-                        userPlants = userPlants,
-                        mainViewModel = mainViewModel,
-                        onDelete = {
-                            coroutineScope.launch {
-                                // Usuń powiązanie w bazie danych
-                                gardenViewModel.deletePlantPlacement(placement)
-
-                                // Znajdź roślinę użytkownika powiązaną z tą lokalizacją i tym ID rośliny
-                                val userPlantToDelete = userPlants.find {
-                                    it.locationId == location.id &&
-                                            (it.plantId == placement.plantId ||
-                                                    it.name == plants.find { p -> p.id == placement.plantId }?.commonName)
-                                }
-
-                                // Jeśli znaleziono, usuń również roślinę użytkownika
-                                userPlantToDelete?.let {
-                                    mainViewModel.removeUserPlant(it)
-                                    println("Usunięto również roślinę użytkownika: ${it.name}")
-                                }
-                            }
-                        }
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = location.name,
+                        style = MaterialTheme.typography.titleLarge
                     )
+
+                    if (location.description.isNotBlank()) {
+                        Text(
+                            text = location.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+
+                    // Informacje o warunkach
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        if (location.lightConditions.isNotBlank()) {
+                            LocationChip(
+                                text = location.lightConditions,
+                                icon = Icons.Default.WbSunny
+                            )
+                        }
+                        if (location.soilType.isNotBlank()) {
+                            LocationChip(
+                                text = location.soilType,
+                                icon = Icons.Default.Grass
+                            )
+                        }
+                    }
+
+                    if (location.notes.isNotBlank()) {
+                        Text(
+                            text = "Notatki: ${location.notes}",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            // Lista roślin
+            Text(
+                text = "Rośliny w tej lokalizacji",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            if (placements.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Brak roślin w tej lokalizacji")
+                }
+            } else {
+                LazyColumn {
+                    items(placements) { placement ->
+                        PlantPlacementItem(
+                            placement = placement,
+                            allPlants = plants,
+                            userPlants = userPlants,
+                            mainViewModel = mainViewModel,
+                            onDelete = {
+                                coroutineScope.launch {
+                                    // Usuń powiązanie w bazie danych
+                                    gardenViewModel.deletePlantPlacement(placement)
+
+                                    // Znajdź roślinę użytkownika powiązaną z tą lokalizacją i tym ID rośliny
+                                    val userPlantToDelete = userPlants.find {
+                                        it.locationId == location.id &&
+                                                (it.plantId == placement.plantId ||
+                                                        it.name == plants.find { p -> p.id == placement.plantId }?.commonName)
+                                    }
+
+                                    // Jeśli znaleziono, usuń również roślinę użytkownika
+                                    userPlantToDelete?.let {
+                                        mainViewModel.removeUserPlant(it)
+                                        println("Usunięto również roślinę użytkownika: ${it.name}")
+                                    }
+                                }
+                            },
+                            onClick = { plantId ->
+                                // Po kliknięciu, ustaw ID rośliny i pokaż szczegóły
+                                onNavigateToPlantDetails(plantId)
+
+                            }
+                        )
+                    }
                 }
             }
         }
-    }
 
-    // Dialog dodawania rośliny
-    if (showAddPlantDialog) {
-        // Filtruj rośliny do tych w tym samym miejscu
-        val plantsInThisLocation = userPlants.filter { it.locationId == location.id }
+        // Dialog dodawania rośliny
+        if (showAddPlantDialog) {
+            // Filtruj rośliny do tych w tym samym miejscu
+            val plantsInThisLocation = userPlants.filter { it.locationId == location.id }
 
-        AddPlantToLocationWithCompatibilityDialog(
-            plants = plants,
-            locationId = location.id,
-            existingPlants = plantsInThisLocation,
-            onDismiss = { showAddPlantDialog = false },
-            onPlantSelected = { plant, variety, quantity, notes, plantingDate ->
-                // Dodaj roślinę do kolekcji użytkownika z powiązaniem do lokalizacji
-                mainViewModel.addUserPlantToLocation(
-                    plant,
-                    location.id,
-                    variety,
-                    quantity,
-                    notes,
-                    plantingDate
-                )
-
-                // Dodaj powiązanie rośliny z lokalizacją
-                gardenViewModel.addPlantPlacement(
-                    PlantPlacementEntity(
-                        plantId = plant.id ?: "",
-                        locationId = location.id,
-                        variety = variety,
-                        quantity = quantity,
-                        notes = notes,
-                        plantingDate = plantingDate
+            AddPlantToLocationWithCompatibilityDialog(
+                plants = plants,
+                locationId = location.id,
+                existingPlants = plantsInThisLocation,
+                onDismiss = { showAddPlantDialog = false },
+                onPlantSelected = { plant, variety, quantity, notes, plantingDate ->
+                    // Dodaj roślinę do kolekcji użytkownika z powiązaniem do lokalizacji
+                    mainViewModel.addUserPlantToLocation(
+                        plant,
+                        location.id,
+                        variety,
+                        quantity,
+                        notes,
+                        plantingDate
                     )
-                )
 
-                showAddPlantDialog = false
-            },
-            mainViewModel = mainViewModel
-        )
-    }
+                    // Dodaj powiązanie rośliny z lokalizacją
+                    gardenViewModel.addPlantPlacement(
+                        PlantPlacementEntity(
+                            plantId = plant.id ?: "",
+                            locationId = location.id,
+                            variety = variety,
+                            quantity = quantity,
+                            notes = notes,
+                            plantingDate = plantingDate
+                        )
+                    )
 
-    // Przycisk dodawania rośliny (floating action button)
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        FloatingActionButton(
-            onClick = { showAddPlantDialog = true },
-            modifier = Modifier.padding(16.dp)
+                    showAddPlantDialog = false
+                },
+                mainViewModel = mainViewModel
+            )
+        }
+
+        // Przycisk dodawania rośliny (floating action button)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Dodaj roślinę")
+            FloatingActionButton(
+                onClick = { showAddPlantDialog = true },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Dodaj roślinę")
+            }
         }
     }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -564,10 +571,17 @@ fun PlantPlacementItem(
     allPlants: List<Plant>,
     userPlants: List<UserPlant>,
     mainViewModel: MainViewModel,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onClick: (Int) -> Unit  // Nowy parametr - funkcja do nawigacji do szczegółów
 ) {
     // Znajdź roślinę na podstawie ID (które jest nazwą rośliny w Firebase)
     val plant = allPlants.find { it.id == placement.plantId }
+
+    // Znajdź odpowiadającą roślinę użytkownika, by przekazać jej ID
+    val userPlant = userPlants.find {
+        it.locationId == placement.locationId &&
+                (it.plantId == placement.plantId || it.name == plant?.commonName)
+    }
 
     // Wyznacz nazwę do wyświetlenia - jeśli nie znaleziono rośliny, użyj plantId jako nazwy
     val displayName = plant?.commonName?.takeIf { it.isNotEmpty() }
@@ -577,6 +591,10 @@ fun PlantPlacementItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+            .clickable {
+                // Po kliknięciu, jeśli mamy ID rośliny użytkownika, przejdź do szczegółów
+                userPlant?.id?.let { onClick(it) }
+            }
     ) {
         Row(
             modifier = Modifier
