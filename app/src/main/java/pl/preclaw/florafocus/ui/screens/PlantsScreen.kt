@@ -6,19 +6,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.preclaw.florafocus.data.model.Plant
 import pl.preclaw.florafocus.data.repository.UserPlant
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pl.preclaw.florafocus.data.repository.PlantLocationEntity
@@ -26,12 +25,12 @@ import pl.preclaw.florafocus.data.repository.PlantPlacementEntity
 import pl.preclaw.florafocus.data.repository.SpaceWithAreas
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantsScreen(
     plants: List<Plant>,
-    viewModel: MainViewModel = viewModel(),
-    gardenViewModel: GardenViewModel = viewModel()
+    viewModel: MainViewModel,
+    gardenViewModel: GardenViewModel,
+    onPlantClick: (UserPlant) -> Unit // Nowy parametr do nawigacji
 ) {
     val userPlants by viewModel.userPlants.collectAsState(initial = emptyList())
     val allSpaces by gardenViewModel.allSpaces.collectAsState(initial = emptyList())
@@ -41,122 +40,80 @@ fun PlantsScreen(
     var selectedPlant by remember { mutableStateOf<Plant?>(null) }
     var showLocationSelectionDialog by remember { mutableStateOf(false) }
 
-    // Zmienne do obsługi szczegółów rośliny
-    var selectedUserPlantId by remember { mutableStateOf<Int?>(null) }
-    var showPlantDetails by remember { mutableStateOf(false) }
-
-    // Funkcja nawigacji wstecz ze szczegółów rośliny
-    val navigateBackFromPlantDetails = {
-        showPlantDetails = false
-        selectedUserPlantId = null
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showPlantSelectionDialog = true }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Dodaj roślinę")
+            }
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            if (userPlants.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Nie masz jeszcze żadnych roślin")
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            "Dodaj pierwszą roślinę klikając przycisk + poniżej",
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    items(userPlants) { plant ->
+                        UserPlantItem(
+                            plant = plant,
+                            locationName = getLocationName(plant.locationId, allSpaces),
+                            onRemove = { viewModel.removeUserPlant(plant) },
+                            onClick = { onPlantClick(plant) }, // Przekazujemy kliknięcie do nawigacji
+                            gardenViewModel = gardenViewModel
+                        )
+                    }
+                }
+            }
+        }
     }
 
-    if (showPlantDetails && selectedUserPlantId != null) {
-        // Pokaż ekran szczegółów rośliny
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        val userPlants by viewModel.userPlants.collectAsState(initial = emptyList())
-                        val userPlant = userPlants.find { it.id == selectedUserPlantId }
-                        Text(userPlant?.name ?: "Szczegóły rośliny")
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = navigateBackFromPlantDetails) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Powrót"
-                            )
-                        }
-                    }
-                )
+    // Dialog wyboru rośliny
+    if (showPlantSelectionDialog) {
+        PlantSelectionDialog(
+            plants = allPlants,
+            onDismiss = { showPlantSelectionDialog = false },
+            onPlantSelected = { plant ->
+                selectedPlant = plant
+                showPlantSelectionDialog = false
+                showLocationSelectionDialog = true  // Po wybraniu rośliny, pokaż dialog lokalizacji
             }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                PlantDetailsScreen(
-                    userPlantId = selectedUserPlantId!!,
-                    onNavigateBack = navigateBackFromPlantDetails
-                )
-            }
-        }
-    } else {
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { showPlantSelectionDialog = true }
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Dodaj roślinę")
-                }
-            }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                if (userPlants.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text("Nie masz jeszcze żadnych roślin")
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "Dodaj pierwszą roślinę klikając przycisk + poniżej",
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp)
-                    ) {
-                        items(userPlants) { plant ->
-                            UserPlantItem(
-                                plant = plant,
-                                locationName = getLocationName(plant.locationId, allSpaces),
-                                onRemove = { viewModel.removeUserPlant(plant) },
-                                onClick = {
-                                    selectedUserPlantId = plant.id
-                                    showPlantDetails = true
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        )
+    }
 
-        // Dialog wyboru rośliny
-        if (showPlantSelectionDialog) {
-            PlantSelectionDialog(
-                plants = allPlants,
-                onDismiss = { showPlantSelectionDialog = false },
-                onPlantSelected = { plant ->
-                    selectedPlant = plant
-                    showPlantSelectionDialog = false
-                    showLocationSelectionDialog = true  // Po wybraniu rośliny, pokaż dialog lokalizacji
-                }
-            )
-        }
-
-        // Dialog wyboru lokalizacji
-        if (showLocationSelectionDialog && selectedPlant != null) {
-            LocationSelectionDialog(
-                spaces = allSpaces,
-                onLocationSelected = { location ->
-                    // Dodaj roślinę do lokalizacji
-                    addPlantToLocation(selectedPlant!!, location, gardenViewModel, viewModel)
-                    showLocationSelectionDialog = false
-                    selectedPlant = null
-                },
-                onDismiss = {
-                    showLocationSelectionDialog = false
-                    selectedPlant = null
-                }
-            )
-        }
+    // Dialog wyboru lokalizacji
+    if (showLocationSelectionDialog && selectedPlant != null) {
+        LocationSelectionDialog(
+            spaces = allSpaces,
+            onLocationSelected = { location ->
+                // Dodaj roślinę do lokalizacji
+                addPlantToLocation(selectedPlant!!, location, gardenViewModel, viewModel)
+                showLocationSelectionDialog = false
+                selectedPlant = null
+            },
+            onDismiss = {
+                showLocationSelectionDialog = false
+                selectedPlant = null
+            }
+        )
     }
 }
 

@@ -92,6 +92,8 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.composables:icons-lucide:1.0.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
 
 
 

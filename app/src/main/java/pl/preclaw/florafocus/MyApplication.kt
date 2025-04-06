@@ -23,16 +23,14 @@ class MyApplication : Application() {
         database = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "flora-db"
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3,MIGRATION_3_4, MIGRATION_4_5,MIGRATION_5_6)
+        )
         // Dodanie migracji
+            .fallbackToDestructiveMigration() // Dodaj tę linię
 
             .build()
 
         firebaseRepo = FirebasePlantRepository()
 
-        if (isMigrationNeeded(this)) {
-            migrateDataFromFirebase()
-        }
     }
 
     private fun migrateDataFromFirebase() {

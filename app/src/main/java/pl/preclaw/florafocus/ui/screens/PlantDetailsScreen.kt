@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,12 +17,15 @@ import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
 @Composable
 fun PlantDetailsScreen(
     userPlantId: Int,
-    viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: MainViewModel,
     onNavigateBack: () -> Unit
 ) {
     // Pobieramy dane rośliny z podanym ID
     val userPlants by viewModel.userPlants.collectAsState(initial = emptyList())
     val userPlant = userPlants.find { it.id == userPlantId }
+
+    // Stan dla dialogu edycji
+    var showEditDialog by remember { mutableStateOf(false) }
 
     // Pobieramy pełne informacje o roślinie z Firebase (jeśli są dostępne)
     val allPlants by viewModel.allPlants.collectAsState()
@@ -31,7 +33,38 @@ fun PlantDetailsScreen(
         allPlants.find { plant -> plant.id == userPlant.plantId }
     }
 
-    // Usuwamy Scaffold i TopAppBar - będą obsługiwane przez rodzica
+    // Po wejściu na ekran ustaw akcje w topBar
+    LaunchedEffect(userPlantId) {
+        userPlant?.let { plant ->
+            viewModel.setPlantDetailsNavigation(
+                plantName = plant.name,
+                onBackPress = onNavigateBack,
+                onEditClick = { showEditDialog = true }
+            )
+        }
+    }
+
+    // Obsługa dialogu edycji
+    if (showEditDialog && userPlant != null) {
+        PlantEditDialog(
+            plant = userPlant,
+            onDismiss = { showEditDialog = false },
+            onConfirm = { variety, quantity, notes, plantingDate, waterReq, lightReq, soilType ->
+                viewModel.updateUserPlant(
+                    userPlant,
+                    variety,
+                    quantity,
+                    notes,
+                    plantingDate,
+                    waterReq,
+                    lightReq,
+                    soilType
+                )
+                showEditDialog = false
+            }
+        )
+    }
+
     if (userPlant == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -74,6 +107,28 @@ fun PlantDetailsScreen(
                         label = "Jadalna",
                         value = if (userPlant.edible) "Tak" else "Nie"
                     )
+                    // Dodaj informację o odmianie, jeśli jest dostępna
+                    if (userPlant.variety.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.LocalFlorist,
+                            label = "Odmiana",
+                            value = userPlant.variety
+                        )
+                    }
+                    // Dodaj informację o ilości
+                    InfoItem(
+                        icon = Icons.Default.Numbers,
+                        label = "Ilość",
+                        value = userPlant.quantity.toString()
+                    )
+                    // Dodaj datę sadzenia, jeśli jest dostępna
+                    if (userPlant.plantingDate.isNotBlank()) {
+                        InfoItem(
+                            icon = Icons.Default.CalendarMonth,
+                            label = "Data sadzenia",
+                            value = userPlant.plantingDate
+                        )
+                    }
                 }
             )
 
@@ -220,6 +275,18 @@ fun PlantDetailsScreen(
                             title = "",
                             items = userPlant.edibleParts
                         )
+                    }
+                )
+            }
+
+            // Notatki użytkownika
+            if (userPlant.notes.isNotBlank()) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PlantInfoSection(
+                    title = "Moje notatki",
+                    content = {
+                        Text(userPlant.notes)
                     }
                 )
             }

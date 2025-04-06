@@ -16,6 +16,9 @@ import java.time.LocalDate
 import java.time.MonthDay
 import java.time.format.DateTimeFormatter
 
+import pl.preclaw.florafocus.ui.navigation.NavigationState
+import pl.preclaw.florafocus.ui.navigation.NavigationStateFactory
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getInstance(application).userPlantDao()
     private val firebaseRepo = FirebasePlantRepository()
@@ -44,7 +47,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             debugPlants()
         }
     }
+    private val _navigationState = MutableStateFlow(NavigationStateFactory.homeState())
+    val navigationState: StateFlow<NavigationState> = _navigationState.asStateFlow()
 
+    /**
+     * Aktualizuje stan nawigacji
+     */
+    fun updateNavigation(state: NavigationState) {
+        _navigationState.value = state
+    }
+
+    /**
+     * Przywraca domyślny stan nawigacji (ekran główny)
+     */
+    fun resetNavigation() {
+        _navigationState.value = NavigationStateFactory.homeState()
+    }
+
+    /**
+     * Ustawia stan nawigacji dla widoku szczegółów rośliny
+     */
+    fun setPlantDetailsNavigation(plantName: String, onBackPress: () -> Unit, onEditClick: () -> Unit) {
+        _navigationState.value = NavigationStateFactory.detailsState(
+            title = plantName,
+            onBackPress = onBackPress,
+            onEditClick = onEditClick
+        )
+    }
     // Obserwuj zmiany w liście roślin użytkownika i aktualizuj zadania
     private fun observeUserPlants() {
         viewModelScope.launch {
@@ -246,6 +275,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getPlantById(plantId: String): Plant? {
         return _allPlants.value.find { it.id == plantId }
     }
+
     fun debugPlants() {
         viewModelScope.launch {
             // Debug istniejących roślin użytkownika
@@ -271,4 +301,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateUserPlant(
+        plant: UserPlant,
+        variety: String,
+        quantity: Int,
+        notes: String,
+        plantingDate: String,
+        waterRequirement: String = plant.waterRequirement,
+        lightRequirement: String = plant.lightRequirement,
+        soilType: String = plant.soilType
+    ) {
+        viewModelScope.launch {
+            // Utwórz zaktualizowaną kopię obiektu
+            val updatedPlant = plant.copy(
+                variety = variety,
+                quantity = quantity,
+                notes = notes,
+                plantingDate = plantingDate,
+                waterRequirement = waterRequirement,
+                lightRequirement = lightRequirement,
+                soilType = soilType
+            )
+
+            // Zapisz zaktualizowaną roślinę
+            dao.insert(updatedPlant) // Room z onConflict = REPLACE zaktualizuje istniejący rekord
+            println("Zaktualizowano roślinę: ${plant.name}, ID: ${plant.id}")
+        }
+    }
 }

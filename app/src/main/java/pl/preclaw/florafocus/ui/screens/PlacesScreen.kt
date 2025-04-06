@@ -5,76 +5,43 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.unit.dp
-import pl.preclaw.florafocus.data.model.LocationType
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Grass
 import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Yard
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import pl.preclaw.florafocus.data.model.LightCondition
+import pl.preclaw.florafocus.data.model.LocationType
 import pl.preclaw.florafocus.data.model.SoilType
 import pl.preclaw.florafocus.data.repository.GardenAreaEntity
 import pl.preclaw.florafocus.data.repository.GardenSpaceEntity
 import pl.preclaw.florafocus.data.repository.PlantLocationEntity
+import pl.preclaw.florafocus.ui.navigation.NavigationLevel
+import pl.preclaw.florafocus.ui.navigation.NavigationStateFactory
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 import pl.preclaw.florafocus.ui.viewmodel.MainViewModel
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Card
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.RadioButton
 
-enum class NavigationLevel {
-    SPACES, AREAS, LOCATIONS, LOCATION_DETAILS
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlacesScreen(
-    gardenViewModel: GardenViewModel = viewModel(),
-    mainViewModel: MainViewModel = viewModel()
+    gardenViewModel: GardenViewModel,
+    mainViewModel: MainViewModel
 ) {
     val spacesWithAreas by gardenViewModel.allSpaces.collectAsState(initial = emptyList())
 
-    // Stan dla wybranego obszaru i lokalizacji
+    // Stan dla nawigacji między poziomami miejsc
     var currentLevel by remember { mutableStateOf(NavigationLevel.SPACES) }
     var selectedSpaceIndex by remember { mutableStateOf(0) }
     var currentArea by remember { mutableStateOf<GardenAreaEntity?>(null) }
@@ -93,189 +60,167 @@ fun PlacesScreen(
         spacesWithAreas.getOrNull(selectedSpaceIndex)
     } else null
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    when {
-                        selectedPlantId != null -> {
-                            // Pokazujemy nazwę rośliny jeśli znamy jej ID
-                            val userPlants by mainViewModel.userPlants.collectAsState(initial = emptyList())
-                            val plantName = userPlants.find { it.id == selectedPlantId }?.name ?: "Szczegóły rośliny"
-                            Text(plantName)
-                        }
-                        else -> {
-                            when (currentLevel) {
-                                NavigationLevel.SPACES -> Text("Miejsca")
-                                NavigationLevel.AREAS -> Text(currentSpace?.space?.name ?: "")
-                                NavigationLevel.LOCATIONS -> Text(currentArea?.name ?: "")
-                                NavigationLevel.LOCATION_DETAILS -> Text(currentLocation?.name ?: "")
+    // Aktualizuj tytuł i akcje w TopAppBar na podstawie poziomu nawigacji
+    LaunchedEffect(currentLevel, currentArea, currentLocation) {
+        when (currentLevel) {
+            NavigationLevel.SPACES -> {
+                mainViewModel.updateNavigation(
+                    NavigationStateFactory.homeState()
+                )
+            }
+            NavigationLevel.AREAS -> {
+                mainViewModel.updateNavigation(
+                    NavigationStateFactory.detailsState(
+                        title = currentSpace?.space?.name ?: "Obszary",
+                        onBackPress = {
+                            currentLevel = NavigationLevel.SPACES
+                        },
+                        onEditClick = { /* Akcja edycji przestrzeni */ }
+                    )
+                )
+            }
+            NavigationLevel.LOCATIONS -> {
+                mainViewModel.updateNavigation(
+                    NavigationStateFactory.detailsState(
+                        title = currentArea?.name ?: "Lokalizacje",
+                        onBackPress = {
+                            currentArea = null
+                            currentLevel = NavigationLevel.AREAS
+                        },
+                        onEditClick = { /* Akcja edycji obszaru */ }
+                    )
+                )
+            }
+            NavigationLevel.LOCATION_DETAILS -> {
+                mainViewModel.updateNavigation(
+                    NavigationStateFactory.detailsState(
+                        title = currentLocation?.name ?: "Szczegóły lokalizacji",
+                        onBackPress = {
+                            currentLocation = null
+                            currentLevel = NavigationLevel.LOCATIONS
+                        },
+                        onEditClick = { /* Akcja edycji lokalizacji */ }
+                    )
+                )
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Główna zawartość ekranu
+        when (currentLevel) {
+            NavigationLevel.SPACES -> {
+                // Lista przestrzeni
+                if (currentSpace == null) {
+                    EmptySpacesMessage(onAddClick = { showAddSpaceDialog = true })
+                } else {
+                    val spaces = spacesWithAreas.map { it.space }
+                    SpacesList(
+                        spaces = spaces,
+                        onSpaceClick = { space ->
+                            // Znajdź indeks wybranej przestrzeni
+                            val index = spaces.indexOf(space)
+                            if (index >= 0) {
+                                selectedSpaceIndex = index
+                                currentLevel = NavigationLevel.AREAS
                             }
+                        },
+                        onDeleteClick = { space ->
+                            gardenViewModel.deleteSpace(space)
                         }
+                    )
+                }
+
+                // FAB dla dodawania nowej przestrzeni
+                FloatingActionButton(
+                    onClick = { showAddSpaceDialog = true },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Dodaj przestrzeń")
+                }
+            }
+
+            NavigationLevel.AREAS -> {
+                // Lista obszarów w wybranej przestrzeni
+                if (currentSpace != null) {
+                    val areas by gardenViewModel.getAreasForSpace(currentSpace.space.id)
+                        .collectAsState(initial = emptyList())
+
+                    if (areas.isEmpty()) {
+                        EmptyListMessage("obszarów w ${currentSpace.space.name}")
+                    } else {
+                        AreasList(
+                            areas = areas,
+                            onAreaClick = { area ->
+                                currentArea = area
+                                currentLevel = NavigationLevel.LOCATIONS
+                            },
+                            onDeleteClick = { area ->
+                                gardenViewModel.deleteArea(area)
+                            }
+                        )
                     }
-                },
-                navigationIcon = {
-                    if (selectedPlantId != null || currentLevel != NavigationLevel.SPACES) {
-                        IconButton(onClick = {
-                            if (selectedPlantId != null) {
-                                // Wróć ze szczegółów rośliny
-                                selectedPlantId = null
-                            } else {
-                                when (currentLevel) {
-                                    NavigationLevel.AREAS -> {
-                                        currentLevel = NavigationLevel.SPACES
-                                    }
-                                    NavigationLevel.LOCATIONS -> {
-                                        currentArea = null
-                                        currentLevel = NavigationLevel.AREAS
-                                    }
-                                    NavigationLevel.LOCATION_DETAILS -> {
-                                        currentLocation = null
-                                        currentLevel = NavigationLevel.LOCATIONS
-                                    }
-                                    else -> {}
-                                }
-                            }
-                        }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Powrót")
-                        }
+
+                    // FAB dla dodawania nowego obszaru
+                    FloatingActionButton(
+                        onClick = { showAddAreaDialog = true },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Dodaj obszar")
                     }
                 }
-            )
-        }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            // Najpierw sprawdzamy, czy mamy wybrany ID rośliny
-            if (selectedPlantId != null) {
-                // Pokazujemy ekran szczegółów rośliny
-                PlantDetailsScreen(
-                    userPlantId = selectedPlantId!!,
-                    onNavigateBack = { selectedPlantId = null }
-                )
-            } else {
-                // Standardowa nawigacja
-                when (currentLevel) {
-                    NavigationLevel.SPACES -> {
-                        // Lista przestrzeni
-                        if (currentSpace == null) {
-                            EmptySpacesMessage(onAddClick = { showAddSpaceDialog = true })
-                        } else {
-                            val spaces = spacesWithAreas.map { it.space }
-                            SpacesList(
-                                spaces = spaces,
-                                onSpaceClick = { space ->
-                                    // Znajdź indeks wybranej przestrzeni
-                                    val index = spaces.indexOf(space)
-                                    if (index >= 0) {
-                                        selectedSpaceIndex = index
-                                        currentLevel = NavigationLevel.AREAS
-                                    }
-                                },
-                                onDeleteClick = { space ->
-                                    gardenViewModel.deleteSpace(space)
-                                }
-                            )
-                        }
+            }
 
-                        // FAB dla dodawania nowej przestrzeni
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.BottomEnd
-                        ) {
-                            FloatingActionButton(
-                                onClick = { showAddSpaceDialog = true },
-                                modifier = Modifier.padding(16.dp)
-                            ) {
-                                Icon(Icons.Default.Add, contentDescription = "Dodaj przestrzeń")
+            NavigationLevel.LOCATIONS -> {
+                // Lista lokalizacji w wybranym obszarze
+                if (currentArea != null) {
+                    val locations by gardenViewModel.getLocationsForArea(currentArea!!.id)
+                        .collectAsState(initial = emptyList())
+
+                    if (locations.isEmpty()) {
+                        EmptyListMessage("lokalizacji w ${currentArea!!.name}")
+                    } else {
+                        LocationsList(
+                            locations = locations,
+                            onLocationClick = { location ->
+                                currentLocation = location
+                                currentLevel = NavigationLevel.LOCATION_DETAILS
+                            },
+                            onDeleteClick = { location ->
+                                gardenViewModel.deleteLocation(location)
                             }
-                        }
+                        )
                     }
 
-                    NavigationLevel.AREAS -> {
-                        // Lista obszarów w wybranej przestrzeni
-                        if (currentSpace != null) {
-                            val areas by gardenViewModel.getAreasForSpace(currentSpace.space.id)
-                                .collectAsState(initial = emptyList())
-
-                            if (areas.isEmpty()) {
-                                EmptyListMessage("obszarów w ${currentSpace.space.name}")
-                            } else {
-                                AreasList(
-                                    areas = areas,
-                                    onAreaClick = { area ->
-                                        currentArea = area
-                                        currentLevel = NavigationLevel.LOCATIONS
-                                    },
-                                    onDeleteClick = { area ->
-                                        gardenViewModel.deleteArea(area)
-                                    }
-                                )
-                            }
-
-                            // FAB dla dodawania nowego obszaru
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.BottomEnd
-                            ) {
-                                FloatingActionButton(
-                                    onClick = { showAddAreaDialog = true },
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Icon(Icons.Default.Add, contentDescription = "Dodaj obszar")
-                                }
-                            }
-                        }
+                    // FAB dla dodawania nowej lokalizacji
+                    FloatingActionButton(
+                        onClick = { showAddLocationDialog = true },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Dodaj lokalizację")
                     }
+                }
+            }
 
-                    NavigationLevel.LOCATIONS -> {
-                        // Lista lokalizacji w wybranym obszarze
-                        if (currentArea != null) {
-                            val locations by gardenViewModel.getLocationsForArea(currentArea!!.id)
-                                .collectAsState(initial = emptyList())
-
-                            if (locations.isEmpty()) {
-                                EmptyListMessage("lokalizacji w ${currentArea!!.name}")
-                            } else {
-                                LocationsList(
-                                    locations = locations,
-                                    onLocationClick = { location ->
-                                        currentLocation = location
-                                        currentLevel = NavigationLevel.LOCATION_DETAILS
-                                    },
-                                    onDeleteClick = { location ->
-                                        gardenViewModel.deleteLocation(location)
-                                    }
-                                )
-                            }
-
-                            // FAB dla dodawania nowej lokalizacji
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.BottomEnd
-                            ) {
-                                FloatingActionButton(
-                                    onClick = { showAddLocationDialog = true },
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Icon(Icons.Default.Add, contentDescription = "Dodaj lokalizację")
-                                }
-                            }
+            NavigationLevel.LOCATION_DETAILS -> {
+                // Szczegóły lokalizacji
+                if (currentLocation != null) {
+                    LocationDetailsContent(
+                        location = currentLocation!!,
+                        gardenViewModel = gardenViewModel,
+                        mainViewModel = mainViewModel,
+                        onNavigateToPlantDetails = { plantId ->
+                            selectedPlantId = plantId
+                            // Tutaj trzeba dodać kod do nawigacji do szczegółów rośliny
+                            // np. poprzez callback lub zarządzanie stanem
                         }
-                    }
-
-                    NavigationLevel.LOCATION_DETAILS -> {
-                        // Szczegóły lokalizacji
-                        if (currentLocation != null) {
-                            LocationDetailsContent(
-                                location = currentLocation!!,
-                                gardenViewModel = gardenViewModel,
-                                mainViewModel = mainViewModel,
-                                onNavigateToPlantDetails = { plantId ->
-                                    selectedPlantId = plantId
-                                }
-                            )
-                        }
-                    }
+                    )
                 }
             }
         }
