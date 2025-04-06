@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material.icons.filled.Delete
@@ -25,6 +26,7 @@ import pl.preclaw.florafocus.data.repository.PlantPlacementEntity
 import pl.preclaw.florafocus.data.repository.SpaceWithAreas
 import pl.preclaw.florafocus.ui.viewmodel.GardenViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantsScreen(
     plants: List<Plant>,
@@ -43,15 +45,40 @@ fun PlantsScreen(
     var selectedUserPlantId by remember { mutableStateOf<Int?>(null) }
     var showPlantDetails by remember { mutableStateOf(false) }
 
+    // Funkcja nawigacji wstecz ze szczegółów rośliny
+    val navigateBackFromPlantDetails = {
+        showPlantDetails = false
+        selectedUserPlantId = null
+    }
+
     if (showPlantDetails && selectedUserPlantId != null) {
         // Pokaż ekran szczegółów rośliny
-        PlantDetailsScreen(
-            userPlantId = selectedUserPlantId!!,
-            onNavigateBack = {
-                showPlantDetails = false
-                selectedUserPlantId = null
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        val userPlants by viewModel.userPlants.collectAsState(initial = emptyList())
+                        val userPlant = userPlants.find { it.id == selectedUserPlantId }
+                        Text(userPlant?.name ?: "Szczegóły rośliny")
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = navigateBackFromPlantDetails) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Powrót"
+                            )
+                        }
+                    }
+                )
             }
-        )
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                PlantDetailsScreen(
+                    userPlantId = selectedUserPlantId!!,
+                    onNavigateBack = navigateBackFromPlantDetails
+                )
+            }
+        }
     } else {
         Scaffold(
             floatingActionButton = {
@@ -132,6 +159,7 @@ fun PlantsScreen(
         }
     }
 }
+
 
 fun addPlantToLocation(
     plant: Plant,
