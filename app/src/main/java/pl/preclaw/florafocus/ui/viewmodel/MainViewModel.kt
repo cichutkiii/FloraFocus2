@@ -9,8 +9,10 @@ import kotlinx.coroutines.launch
 import pl.preclaw.florafocus.data.model.CareStep
 import pl.preclaw.florafocus.data.model.DateRange
 import pl.preclaw.florafocus.data.model.Plant
+import pl.preclaw.florafocus.data.model.PlantUpdateDetails
 import pl.preclaw.florafocus.data.repository.AppDatabase
 import pl.preclaw.florafocus.data.repository.FirebasePlantRepository
+import pl.preclaw.florafocus.data.repository.PlantRepository
 import pl.preclaw.florafocus.data.repository.UserPlant
 import java.time.LocalDate
 import java.time.MonthDay
@@ -29,7 +31,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Lista wszystkich roślin z Firebase (do wyboru)
     private val _allPlants = MutableStateFlow<List<Plant>>(emptyList())
     val allPlants: StateFlow<List<Plant>> = _allPlants.asStateFlow()
-
+    private val plantRepository = PlantRepository(
+        AppDatabase.getInstance(application),
+        FirebasePlantRepository()
+    )
     // Lista nadchodzących zadań
     private val _upcomingTasks = MutableStateFlow<List<Pair<Plant, CareStep>>>(emptyList())
     val upcomingTasks: StateFlow<List<Pair<Plant, CareStep>>> = _upcomingTasks.asStateFlow()
@@ -82,7 +87,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+    fun updatePlant(
+        userPlantId: Int,
+        variety: String? = null,
+        quantity: Int? = null,
+        notes: String? = null,
+        plantingDate: String? = null,
+        waterRequirement: String? = null,
+        lightRequirement: String? = null,
+        soilType: String? = null
+    ) {
+        viewModelScope.launch {
+            val updates = PlantUpdateDetails(
+                variety = variety,
+                quantity = quantity,
+                notes = notes,
+                plantingDate = plantingDate,
+                waterRequirement = waterRequirement,
+                lightRequirement = lightRequirement,
+                soilType = soilType
+            )
 
+            plantRepository.updateUserPlant(userPlantId, updates)
+        }
+    }
     // Aktualizuj listę nadchodzących zadań
     private fun updateUpcomingTasks(userPlantsList: List<UserPlant>) {
         val tasks = mutableListOf<Pair<Plant, CareStep>>()
@@ -328,4 +356,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             println("Zaktualizowano roślinę: ${plant.name}, ID: ${plant.id}")
         }
     }
+
+
 }

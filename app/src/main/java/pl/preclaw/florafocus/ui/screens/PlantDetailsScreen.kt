@@ -50,21 +50,26 @@ fun PlantDetailsScreen(
             plant = userPlant,
             onDismiss = { showEditDialog = false },
             onConfirm = { variety, quantity, notes, plantingDate, waterReq, lightReq, soilType ->
-                viewModel.updateUserPlant(
-                    userPlant,
-                    variety,
-                    quantity,
-                    notes,
-                    plantingDate,
-                    waterReq,
-                    lightReq,
-                    soilType
+                // Wywołujemy nową metodę updatePlant z ViewModelu
+                viewModel.updatePlant(
+                    userPlantId = userPlantId,
+                    variety = variety,
+                    quantity = quantity,
+                    notes = notes,
+                    plantingDate = plantingDate,
+                    waterRequirement = waterReq,
+                    lightRequirement = lightReq,
+                    soilType = soilType
                 )
                 showEditDialog = false
             }
         )
     }
-
+    FloatingActionButton(
+        onClick = { showEditDialog = true }
+    ) {
+        Icon(Icons.Default.Edit, contentDescription = "Edytuj")
+    }
     if (userPlant == null) {
         Box(
             modifier = Modifier.fillMaxSize(),

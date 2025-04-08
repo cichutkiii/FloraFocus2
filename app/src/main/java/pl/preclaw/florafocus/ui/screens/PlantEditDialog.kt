@@ -22,7 +22,15 @@ import java.time.format.DateTimeFormatter
 fun PlantEditDialog(
     plant: UserPlant,
     onDismiss: () -> Unit,
-    onConfirm: (variety: String, quantity: Int, notes: String, plantingDate: String, waterRequirement: String, lightRequirement: String, soilType: String) -> Unit
+    onConfirm: (
+        variety: String,
+        quantity: Int,
+        notes: String,
+        plantingDate: String,
+        waterRequirement: String,
+        lightRequirement: String,
+        soilType: String
+    ) -> Unit
 ) {
     // Podstawowe dane
     var variety by remember { mutableStateOf(plant.variety) }
@@ -34,7 +42,6 @@ fun PlantEditDialog(
     var plantingDate by remember { mutableStateOf(plant.plantingDate) }
 
     // Stany dla rozszerzonych danych, które możemy edytować
-    var name by remember { mutableStateOf(plant.name) }
     var waterReq by remember { mutableStateOf(plant.waterRequirement) }
     var lightReq by remember { mutableStateOf(plant.lightRequirement) }
     var soilType by remember { mutableStateOf(plant.soilType) }
@@ -123,8 +130,6 @@ fun PlantEditDialog(
                 when (selectedTabIndex) {
                     0 -> {
                         // Zakładka podstawowa
-
-                        // Odmiana
                         OutlinedTextField(
                             value = variety,
                             onValueChange = { variety = it },
@@ -134,7 +139,6 @@ fun PlantEditDialog(
                                 .padding(vertical = 8.dp)
                         )
 
-                        // Ilość
                         OutlinedTextField(
                             value = quantity,
                             onValueChange = {
@@ -149,7 +153,6 @@ fun PlantEditDialog(
                                 .padding(vertical = 8.dp)
                         )
 
-                        // Data posadzenia z ikoną kalendarza
                         OutlinedTextField(
                             value = plantingDate,
                             onValueChange = { /* Readonly - changes through date picker */ },
@@ -169,7 +172,6 @@ fun PlantEditDialog(
                                 .padding(vertical = 8.dp)
                         )
 
-                        // Notatki
                         OutlinedTextField(
                             value = notes,
                             onValueChange = { notes = it },
@@ -182,8 +184,6 @@ fun PlantEditDialog(
                     }
                     1 -> {
                         // Zakładka wymagań uprawowych
-
-                        // Wymagania wodne
                         ExposedDropdownMenuBox(
                             expanded = expandedWaterMenu,
                             onExpandedChange = { expandedWaterMenu = !expandedWaterMenu },
@@ -218,7 +218,6 @@ fun PlantEditDialog(
                             }
                         }
 
-                        // Wymagania świetlne
                         ExposedDropdownMenuBox(
                             expanded = expandedLightMenu,
                             onExpandedChange = { expandedLightMenu = !expandedLightMenu },
@@ -253,7 +252,6 @@ fun PlantEditDialog(
                             }
                         }
 
-                        // Typ gleby
                         ExposedDropdownMenuBox(
                             expanded = expandedSoilMenu,
                             onExpandedChange = { expandedSoilMenu = !expandedSoilMenu },
@@ -290,8 +288,6 @@ fun PlantEditDialog(
                     }
                     2 -> {
                         // Zakładka dodatkowych szczegółów
-
-                        // Tutaj można dodać więcej pól, jeśli będą potrzebne
                         Text(
                             text = "Dodatkowe informacje o roślinie:",
                             style = MaterialTheme.typography.bodyLarge,
@@ -322,7 +318,6 @@ fun PlantEditDialog(
                             )
                         }
 
-                        // Informacja o edycji pełnego profilu
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -350,7 +345,15 @@ fun PlantEditDialog(
             Button(
                 onClick = {
                     val quantityInt = quantity.toIntOrNull() ?: 1
-                    onConfirm(variety, quantityInt, notes, plantingDate, waterReq, lightReq, soilType)
+                    onConfirm(
+                        variety,
+                        quantityInt,
+                        notes,
+                        plantingDate,
+                        waterReq,
+                        lightReq,
+                        soilType
+                    )
                 }
             ) {
                 Text("Zapisz")
