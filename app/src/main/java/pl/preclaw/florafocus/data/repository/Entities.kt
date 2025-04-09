@@ -29,6 +29,34 @@ data class GardenAreaEntity(
     val description: String = "",
     val parentId: String  // ID głównej przestrzeni
 )
+@Entity(
+    tableName = "plant_location_crossref",
+    primaryKeys = ["plantId", "locationId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = UserPlant::class,
+            parentColumns = ["id"],
+            childColumns = ["plantId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = PlantLocationEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["locationId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index("plantId"),
+        Index("locationId")
+    ]
+)
+data class PlantLocationCrossRef(
+    val plantId: Int,                  // ID UserPlant
+    val locationId: String,            // ID PlantLocationEntity
+    val addedDate: String = "",        // Data dodania rośliny do lokalizacji
+    val notes: String = ""             // Opcjonalne notatki specyficzne dla tej lokalizacji
+)
 
 @Entity(tableName = "plant_location",
     foreignKeys = [
@@ -91,13 +119,6 @@ data class SpaceWithAreas(
     val areas: List<AreaWithLocations>
 )
 
-data class LocationWithPlants(
-    @Embedded val location: PlantLocationEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "locationId"
-    )
-    val plantPlacements: List<PlantPlacementEntity>
-)
+
 
 // DAO dla operacji na bazie danych

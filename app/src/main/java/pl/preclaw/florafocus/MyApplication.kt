@@ -15,6 +15,12 @@ import pl.preclaw.florafocus.data.repository.UserPlant
 class MyApplication : Application() {
     private lateinit var database: AppDatabase
     private lateinit var firebaseRepo: FirebasePlantRepository
+    val plantRepository: PlantRepository by lazy {
+        PlantRepository(
+            database = AppDatabase.getInstance(this),
+            firebaseRepo = FirebasePlantRepository()
+        )
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -33,30 +39,7 @@ class MyApplication : Application() {
 
     }
 
-    private fun migrateDataFromFirebase() {
-        val dao = database.userPlantDao()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            firebaseRepo.getAllPlants().collect { firebasePlants ->
-                firebasePlants.forEach { plant ->
-                    val userPlant = UserPlant(
-                        name = plant.commonName,
-                        careSteps = plant.careSteps
-                    )
-                    dao.insert(userPlant)
-                }
-            }
-            markMigrationComplete(this@MyApplication)
-        }
-    }
 
-    private fun isMigrationNeeded(context: Context): Boolean {
-        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        return !prefs.getBoolean("migration_done", false)
-    }
 
-    private fun markMigrationComplete(context: Context) {
-        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("migration_done", true).apply()
-    }
 }

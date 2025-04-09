@@ -12,50 +12,85 @@ import pl.preclaw.florafocus.data.model.Plant
 
 @Dao
 interface UserPlantDao {
-    // Istniejące metody...
-    @Query("SELECT * FROM userplant")
-    fun getAll(): Flow<List<UserPlant>>
+    // Podstawowe operacje CRUD
+    @Query("SELECT * FROM user_plants")
+    fun getAllPlants(): Flow<List<UserPlant>>
+
+    @Query("SELECT * FROM user_plants WHERE id = :id")
+    suspend fun getPlantById(id: Int): UserPlant?
+
+    @Query("SELECT * FROM user_plants WHERE id = :id")
+    fun getPlantByIdFlow(id: Int): Flow<UserPlant?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(plant: UserPlant): Long
+    suspend fun insertPlant(plant: UserPlant): Long
+
+    @Update
+    suspend fun updatePlant(plant: UserPlant)
 
     @Delete
-    suspend fun delete(plant: UserPlant)
+    suspend fun deletePlant(plant: UserPlant)
 
-    @Query("DELETE FROM userplant WHERE id = :plantId")
-    suspend fun deleteById(plantId: Int)
+    @Query("DELETE FROM user_plants WHERE id = :id")
+    suspend fun deletePlantById(id: Int)
 
-    // Nowe metody do edycji
-
-    // Pobieranie rośliny po ID
-    @Query("SELECT * FROM userplant WHERE id = :id")
-    suspend fun getById(id: Int): UserPlant?
-
-    // Aktualizacja rośliny
-    @Update
-    suspend fun update(plant: UserPlant)
-
-    // Opcjonalnie, jeśli potrzebujemy pobrać rośliny w konkretnej lokalizacji
-    @Query("SELECT * FROM userplant WHERE locationId = :locationId")
-    fun getPlantsInLocation(locationId: String): Flow<List<UserPlant>>
-    @Query("SELECT * FROM userplant WHERE plantId = :plantId AND locationId = :locationId LIMIT 1")
-    suspend fun findByPlantIdAndLocation(plantId: String, locationId: String): UserPlant?
-
-    // Nowa metoda - bezpieczne dodawanie rośliny do lokalizacji
+    // Złożone zapytania z relacjami
     @Transaction
-    suspend fun addPlantToLocation(plant: UserPlant) {
-        // Sprawdź, czy roślina o takim ID i lokalizacji już istnieje
-        val existingPlant = findByPlantIdAndLocation(plant.plantId, plant.locationId)
+    @Query("SELECT * FROM user_plants")
+    fun getPlantsWithLocations(): Flow<List<UserPlantWithLocations>>
 
-        if (existingPlant == null) {
-            // Jeśli nie istnieje, dodaj ją
-            insert(plant)
-        } else {
-            // Jeśli istnieje, zaktualizuj jej dane
-            val updatedPlant = plant.copy(id = existingPlant.id)
-            insert(updatedPlant) // REPLACE strategia zaktualizuje istniejący rekord
-        }
-    }
+    @Transaction
+    @Query("SELECT * FROM user_plants WHERE id = :id")
+    fun getPlantWithLocations(id: Int): Flow<UserPlantWithLocations?>
+
+    @Transaction
+    @Query("""
+    SELECT up.* FROM user_plants up
+    INNER JOIN plant_location_crossref plc ON up.id = plc.plantId
+    WHERE plc.locationId = :locationId
+""")
+    fun getPlantsInLocation(locationId: String): Flow<List<UserPlant>>
+
+    @Transaction
+    @Query("""
+        SELECT up.* FROM user_plants up
+        INNER JOIN plant_location_crossref plc ON up.id = plc.plantId
+        WHERE plc.locationId = :locationId
+    """)
+    fun getPlantDetailsInLocation(locationId: String): Flow<List<UserPlantWithLocations>>
+}
+
+@Dao
+interface PlantLocationDao {
+    // Zarządzanie powiązaniami roślina-lokalizacja
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCrossRef(crossRef: PlantLocationCrossRef)
+
+    @Delete
+    suspend fun deleteCrossRef(crossRef: PlantLocationCrossRef)
+
+    @Query("DELETE FROM plant_location_crossref WHERE plantId = :plantId AND locationId = :locationId")
+    suspend fun deleteCrossRefByIds(plantId: Int, locationId: String)
+
+    @Query("""
+        SELECT * FROM plant_location_crossref
+        WHERE plantId = :plantId
+    """)
+    fun getLocationsForPlant(plantId: Int): Flow<List<PlantLocationCrossRef>>
+
+    @Query("""
+        SELECT * FROM plant_location_crossref
+        WHERE locationId = :locationId
+    """)
+    fun getPlantsForLocation(locationId: String): Flow<List<PlantLocationCrossRef>>
+
+    // Szczegółowe zapytania
+    @Transaction
+    @Query("""
+        SELECT * FROM plant_location_crossref
+        WHERE plantId = :plantId AND locationId = :locationId
+    """)
+    fun getPlantLocationDetails(plantId: Int, locationId: String): Flow<PlantLocationDetails?>
 }
 
 @Dao
